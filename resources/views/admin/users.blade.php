@@ -5,7 +5,6 @@
 @section('content')
     <h2>User List</h2>
 
-    <!-- Кнопки действий -->
     <div class="mb-3">
         <a href="#" class="btn btn-primary">Add User</a>
     </div>
@@ -14,7 +13,6 @@
             {{ session('success') }}
         </div>
     @endif
-    <!-- Таблица с пользователями -->
     <table class="table table-striped">
         <thead>
             <tr>
