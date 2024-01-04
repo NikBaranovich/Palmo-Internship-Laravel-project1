@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Http\Enums\UserRoles;
+use App\Enums\UserRole;
 
 class User extends Authenticatable
 {
@@ -18,11 +18,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-    ];
-
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'role',
+    // ];
+    protected $guarded = ['id', 'remember_token', 'created_at', 'updated_at', 'email_verified_at'];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -30,11 +31,10 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'role',
         'remember_token',
     ];
     protected $enums = [
-        'role' => UserRoles::class,
+        'role' => UserRole::class,
     ];
     /**
      * The attributes that should be cast.

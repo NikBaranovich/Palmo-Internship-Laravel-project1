@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Enums\UserRoles;
+use App\Enums\UserRole;
 
 class DashboardController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:'. UserRoles::Admin->value);
+        $this->middleware('role:' . UserRole::Admin->value);
     }
 
     public function show()

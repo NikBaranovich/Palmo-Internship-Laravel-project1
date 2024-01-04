@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Admin\Auth\LoginController;
+// use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\EntertainmentVenueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,15 +27,20 @@ Route::controller(LoginController::class)
         Route::post('login', 'login')->name('login.auth');
         Route::post('logout', 'logout')->name('logout');
     });
+// Route::controller(RegisterController::class)
+//     ->group(function () {
+//         Route::get('register', 'showRegistrationForm')->name('register');
+//     });
 Route::controller(HomeController::class)
     ->group(function () {
         Route::get('/', 'index')->name('home');
     });
 
-Route::prefix('admin')->group(function () {
-    Route::get('login', [LoginController::class, 'showLoginForm'])->name('admin.login');
-    Route::get('dashboard', [DashboardController::class, 'show'])->name('admin.dashboard');
-    Route::resource('users', UserController::class)->names('admin.users');
-})->name('admin');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
+    Route::resource('users', UserController::class)->names('users');
+    Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment_venues');
+});
 
 Route::view('/test', 'welcome');

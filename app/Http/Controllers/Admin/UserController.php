@@ -5,38 +5,60 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Http\Enums\UserRoles;
+use App\Enums\UserRole;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Database\Eloquent\Builder;
+use GuzzleHttp\Promise\Create;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        protected User $user
+    ) {
         $this->middleware('auth');
-        $this->middleware('role:' . UserRoles::Admin->value);
+        $this->middleware('admin');
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        return view('admin.users', ['users' => $users]);
+        $users = $this->user->query()
+            ->when($request->has('sort_by'), function (Builder $query) use ($request) {
+                $query->orderBy(
+                    $request->input('sort_by'),
+                    $request->input('sort_order', 'asc')
+                );
+            })
+            ->paginate(10);
+
+
+        return view('admin.users', compact('users'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(User $user)
     {
-        //
+        return view('admin.user-form', compact('user'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request, User $user)
     {
-        //
+        User::create($request->except('_token'));
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'User successfully created.');
     }
 
     /**
@@ -50,33 +72,35 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        $user = User::findOrFail($id);
         $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
 
-        return view('admin.user-edit', ['user' => $user]);
+        return view('admin.user-form', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $user = User::findOrFail($id);
-        $user->fill($request->only($user->getFillable()));
-        $user->save();
-        return redirect()->route('admin.users.edit', $user)->with('success', 'Profile successfully updated.');
+        $user->update($request->except('_token'));
+        // User::create($request->except('_token'));
+
+        return redirect()
+            ->route('admin.users.edit', $user)
+            ->with('success', 'User successfully updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User successfully deleted.');
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'User successfully deleted.');
     }
 }

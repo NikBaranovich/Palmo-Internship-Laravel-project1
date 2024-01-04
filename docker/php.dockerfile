@@ -4,17 +4,18 @@ FROM php:8.2-fpm-alpine
 RUN apk --no-cache update \
     && apk --no-cache add \
         autoconf \
-        libzip-dev \
         g++ \
         make \
+        linux-headers \
         openssl-dev
 
 # Установка расширений PHP
 RUN pecl install redis \
     && docker-php-ext-enable redis \
-    && docker-php-ext-install pdo pdo_mysql \
-    && pecl install -o -f xdebug-3.3.1 \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-install pdo pdo_mysql
+
+RUN pecl install xdebug
+COPY xdebug.ini  $PHP_INI_DIR/conf.d/
 
 # Copy php.ini
 COPY ./php.ini /usr/local/etc/php/

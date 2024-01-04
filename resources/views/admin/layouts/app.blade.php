@@ -3,18 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Админ-панель</title>
-    <!-- Подключаем Bootstrap CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            background-color: #343a40;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .admin-panel {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
             color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            background-color: #555;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
         }
 
         table {
-            color: #fff !important;
+            color: #423838 !important;
         }
 
         .admin-panel {
@@ -29,30 +74,20 @@
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
         }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
     </style>
+    <title>Admin Panel</title>
 </head>
 
 <body>
-
     <div class="admin-panel">
-        <!-- Sidebar -->
         @include('admin.components.sidebar')
+        <main class="content">
+            {{-- <h1>Welcome to the Admin Panel</h1> --}}
 
-        <!-- Content -->
-        <div class="content">
+            <!-- Content -->
             @yield('content')
-        </div>
+        </main>
     </div>
-
-    <!-- Подключаем Bootstrap JS и jQuery (если необходимо) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>
