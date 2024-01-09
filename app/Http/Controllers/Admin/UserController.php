@@ -35,8 +35,7 @@ class UserController extends Controller
                     $request->input('sort_order', 'asc')
                 );
             })
-            ->paginate(10);
-
+            ->paginate(2);
 
         return view('admin.users', compact('users'));
     }
@@ -54,7 +53,7 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request, User $user)
     {
-        User::create($request->except('_token'));
+        $user->create($request->except('_token'));
 
         return redirect()
             ->route('admin.users.index')
@@ -85,7 +84,6 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $user->update($request->except('_token'));
-        // User::create($request->except('_token'));
 
         return redirect()
             ->route('admin.users.edit', $user)

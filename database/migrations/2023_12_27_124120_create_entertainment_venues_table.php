@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('entertainment_venues', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('map_link')->nullable();
             $table->string('city');
-            $table->string('street');
+            $table->string('address');
             $table->string('description')->nullable();
             $table->foreignId('venue_type_id')->constrained('venue_types')->cascadeOnDelete();
             $table->timestamps();

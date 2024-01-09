@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('trailer_url')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

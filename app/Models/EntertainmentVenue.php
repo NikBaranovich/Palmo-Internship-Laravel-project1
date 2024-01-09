@@ -23,12 +23,15 @@ class EntertainmentVenue extends Model
      */
 
 
-    protected $casts = [
-    ];
+    protected $casts = [];
 
     public function venueType()
     {
         return $this->belongsTo(VenueType::class);
     }
 
+    public function halls()
+    {
+        return $this->belongsToMany(Hall::class);
+    }
 }

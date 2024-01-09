@@ -18,16 +18,22 @@
             <thead>
                 <tr>
                     <th><a
-                            href="{{ route('admin.users.index', ['sort_by' => 'id', 'sort_order' => request('sort_by') == 'id' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}">ID</a>
+                            href="{{ route('admin.users.index', ['sort_by' => 'id', 'sort_order' => sortOrder('id')]) }}">ID</a>
                     </th>
                     <th><a
-                            href="{{ route('admin.users.index', ['sort_by' => 'name', 'sort_order' => request('sort_by') == 'name' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}">Name</a>
+                            href="{{ route('admin.users.index', ['sort_by' => 'name', 'sort_order' => sortOrder('name')]) }}">Name</a>
                     </th>
                     <th><a
-                            href="{{ route('admin.users.index', ['sort_by' => 'email', 'sort_order' => request('sort_by') == 'email' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}">Email</a>
+                            href="{{ route('admin.users.index', [
+                                'sort_by' => 'email',
+                                'sort_order' => request('sort_by') == 'email' && request('sort_order') == 'asc' ? 'desc' : 'asc',
+                            ]) }}">Email</a>
                     </th>
                     <th><a
-                            href="{{ route('admin.users.index', ['sort_by' => 'role', 'sort_order' => request('sort_by') == 'role' && request('sort_order') == 'asc' ? 'desc' : 'asc']) }}">Role</a>
+                            href="{{ route('admin.users.index', [
+                                'sort_by' => 'role',
+                                'sort_order' => request('sort_by') == 'role' && request('sort_order') == 'asc' ? 'desc' : 'asc',
+                            ]) }}">Role</a>
                     </th>
                     <th>Action</th>
                 </tr>
@@ -55,7 +61,8 @@
             </tbody>
         </table>
         {{ $users->appends([
-                'sort-by' => request('sort-by'),
+                'sort_by' => request('sort_by'),
+                'sort_order' => request('sort_order'),
             ])->links() }}
     @else
         <h1>Not Found!</h1>

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\EntertainmentVenue;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\User;
 use App\Models\VenueType;
 
 class EntertainmentVenueController extends Controller
@@ -25,10 +24,7 @@ class EntertainmentVenueController extends Controller
         $venueTypes = VenueType::all();
 
         $venues = EntertainmentVenue::all();
-        // foreach($venues as $venue){
-        //     dump($venue->getAttributes());
-        //     dump($venue->venueType);
-        // }
+
         $venues = $this->venue->query()
             ->when($request->has('sort_by'), function (Builder $query) use ($request) {
                 $query->orderBy(
@@ -37,15 +33,18 @@ class EntertainmentVenueController extends Controller
                 );
             })
             ->paginate(10);
+
         return view('admin.entertainment-venues', compact('venueTypes', 'venues'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(User $venue)
+    public function create(EntertainmentVenue $venue)
     {
-        return view('admin.entertainment-venues-form', compact('venue'));
+        $venueTypes = VenueType::all();
+
+        return view('admin.entertainment-venues-form', compact('venue', 'venueTypes'));
     }
 
     /**
@@ -53,7 +52,8 @@ class EntertainmentVenueController extends Controller
      */
     public function store(Request $request)
     {
-        EntertainmentVenue::create($request->except('_token'));
+        $this->venue->create($request->except('_token'));
+
         return redirect()
             ->route('admin.entertainment_venues.index')
             ->with('success', 'Venue successfully created.');

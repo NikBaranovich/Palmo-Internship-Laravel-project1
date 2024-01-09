@@ -8,29 +8,31 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    // protected $fillable = [
-    //     'name',
-    //     'email',
-    //     'role',
-    // ];
-    protected $guarded = ['id', 'remember_token', 'created_at', 'updated_at', 'email_verified_at'];
+    protected $fillable = [
+        'name',
+        'email',
+        'role',
+        'password',
+    ];
+
+    // protected $guarded = ['id', 'remember_token', 'created_at', 'updated_at', 'email_verified_at'];
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
     protected $enums = [

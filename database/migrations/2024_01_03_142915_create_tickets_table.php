@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('token');
-            $table->foreignId('event_venue_id')->constrained('event_venue')->cascadeOnDelete();
+            $table->foreignId('entertainment_venue_event_id')->constrained('entertainment_venue_event')->cascadeOnDelete();
             $table->foreignId('seat_id')->constrained('seats')->cascadeOnDelete();
             $table->decimal('price');
             $table->timestamps();

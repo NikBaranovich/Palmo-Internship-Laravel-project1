@@ -12,7 +12,7 @@
             {{ session('success') }}
         </div>
     @endif
-    @if (count($venues))
+    @if ($venues)
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -53,12 +53,7 @@
                                 'sort_order' => request('sort_by') == 'description' && request('sort_order') == 'asc' ? 'desc' : 'asc',
                             ]) }}">Description</a>
                     </th>
-                    <th><a
-                            href="{{ route('admin.entertainment_venues.index', [
-                                'sort_by' => 'layout',
-                                'sort_order' => request('sort_by') == 'layout' && request('sort_order') == 'asc' ? 'desc' : 'asc',
-                            ]) }}">Layout</a>
-                    </th>
+                    <th>Halls</th>
                     <th><a
                             href="{{ route('admin.entertainment_venues.index', [
                                 'sort_by' => 'venue_type_id',
@@ -73,14 +68,17 @@
             <tbody>
                 @foreach ($venues as $venue)
                     <tr>
-                        <td contenteditable="true">{{ $venue->id }}</td>
-                        <td contenteditable="true">{{ $venue->name }}</td>
-                        <td contenteditable="true">{{ $venue->map_link }}</td>
-                        <td contenteditable="true">{{ $venue->city }}</td>
-                        <td contenteditable="true">{{ $venue->address }}</td>
-                        <td contenteditable="true">{{ $venue->description }}</td>
-                        <td contenteditable="true">{{ $venue->layout }}</td>
-                        <td contenteditable="true">{{ $venue->venueType->name }}</td>
+                        <td>{{ $venue->id }}</td>
+                        <td>{{ $venue->name }}</td>
+                        <td>{{ $venue->map_link }}</td>
+                        <td>{{ $venue->city }}</td>
+                        <td>{{ $venue->address }}</td>
+                        <td>{{ $venue->description }}</td>
+                        <td>{{ $venue->halls->count() }} Hall(s)
+                            <a href="{{ route('admin.halls.create', $venue->id) }}" class="btn btn-sm btn-success">Add
+                                Hall</a>
+                        </td>
+                        <td>{{ $venue->venueType->name }}</td>
                         <td>
                             <a href="{{ route('admin.entertainment_venues.edit', ['entertainment_venue' => $venue->id]) }}"
                                 class="btn btn-sm btn-warning">Edit</a>
@@ -103,7 +101,7 @@
         <h1>Not Found!</h1>
     @endif
 
-    <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
+    {{-- <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
         xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="places" width="100%" height="100%">
             @foreach (json_decode($venues->last()->layout) as $item)
@@ -116,7 +114,7 @@
                 @endif
             @endforeach
         </g>
-    </svg>
+    </svg> --}}
 
     <div id="tooltip"
         style="position: absolute; display: block; background-color: #f21a1a; padding: 5px; border: 1px solid #ccc;">

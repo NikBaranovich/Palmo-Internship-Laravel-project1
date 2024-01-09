@@ -5,14 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class VenueType extends Model
+class Seat extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
     
-    public function entertainmentVenues()
+    protected $fillable = ['number', 'seat_group_id'];
+
+    public function seatGroup()
     {
-        return $this->hasMany(EntertainmentVenue::class);
+        return $this->belongsTo(SeatGroup::class);
     }
 }

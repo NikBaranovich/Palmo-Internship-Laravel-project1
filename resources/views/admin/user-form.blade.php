@@ -2,11 +2,7 @@
 
 @section('content')
     <div class="container">
-        @if (!$user->exists)
-            <h2>Add User</h2>
-        @else
-            <h2>Edit User</h2>
-        @endif
+        <h2> {{ $user->exists ? 'Edit' : 'Add' }} User</h2>
 
         @if (session('success'))
             <div class="alert alert-success" role="alert">
