@@ -13,7 +13,9 @@ use Illuminate\Http\Request;
 class HallController extends Controller
 {
     public function __construct(
-        protected Hall $hall
+        protected Hall $hall,
+        protected SeatGroup $seatGroup,
+        protected EntertainmentVenue $entertainmentVenue,
     ) {
         $this->middleware('auth');
         $this->middleware('admin');
@@ -31,7 +33,7 @@ class HallController extends Controller
      */
     public function create(Hall $hall, EntertainmentVenue $entertainmentVenue)
     {
-        return view('admin.hall-form', compact('hall', 'entertainmentVenue'));
+        return view('admin.hall.edit', compact('hall', 'entertainmentVenue'));
     }
 
     /**
@@ -39,7 +41,6 @@ class HallController extends Controller
      */
     public function store(Request $request)
     {
-
         $seatGroups = $request->input('groups', []);
         $updatedLayout = [];
         foreach ($seatGroups as $seatGroupData) {
@@ -52,7 +53,6 @@ class HallController extends Controller
 
             $layout = json_decode($request->input('layout', '[]'), true);
 
-
             foreach ($layout as $element) {
                 if ($element['group'] == $seatGroupData['id']) {
                     $element['group'] = $seatGroup->id;
@@ -62,23 +62,19 @@ class HallController extends Controller
         }
 
         $updatedLayout = array_map(function ($element) {
-            switch ($element['type']) {
-                case 'seat':
-                    $seat = new Seat([
-                        'number' => 0,
-                        'seat_group_id' => $element['group']
-                    ]);
-                    $seat->save();
-                    break;
-                case 'table':
-                    $table = new Table([
-                        'seat_group_id' => $element['group']
-                    ]);
-                    $table->save();
-                    break;
-            }
+            $model = match ($element['type']) {
+                'seat' =>  new Seat([
+                    'number' => 0,
+                    'seat_group_id' => $element['group']
+                ]),
+                'table' => new Table([
+                    'seat_group_id' => $element['group']
+                ]),
+            };
+            $model->save();
 
             unset($element['group']);
+
             return $element;
         }, $updatedLayout);
 

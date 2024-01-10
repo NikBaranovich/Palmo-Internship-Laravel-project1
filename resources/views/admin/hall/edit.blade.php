@@ -35,7 +35,7 @@
 
             <div class="col-md-9">
                 <form id='form' method="post" enctype="multipart/form-data"
-                    action="{{ $hall->exists ? route('admin.halls.update', $hall->id) : route('admin.halls.store') }}">
+                    action="{{ $hall->exists ? route('admin.halls.update', ['entertainmentVenue' => $entertainmentVenue, 'hall' => $hall->id]) : route('admin.halls.store', ['entertainmentVenue' => $entertainmentVenue]) }}">
                     @csrf
                     @if ($hall->exists)
                         @method('PUT')
@@ -82,7 +82,8 @@
                         </div>
                     </div>
                     <input type="hidden" id="layout" name="layout">
-                    <input type="hidden" id="entertainment-venue-id" name="entertainment-venue-id" value = {{$entertainmentVenue->id}}>
+                    <input type="hidden" id="entertainment-venue-id" name="entertainment-venue-id"
+                        value={{ $entertainmentVenue->id }}>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>

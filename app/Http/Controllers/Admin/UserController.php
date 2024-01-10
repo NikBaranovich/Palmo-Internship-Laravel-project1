@@ -35,9 +35,9 @@ class UserController extends Controller
                     $request->input('sort_order', 'asc')
                 );
             })
-            ->paginate(2);
+            ->paginate(10);
 
-        return view('admin.users', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
     /**
@@ -45,7 +45,7 @@ class UserController extends Controller
      */
     public function create(User $user)
     {
-        return view('admin.user-form', compact('user'));
+        return view('admin.user.edit', compact('user'));
     }
 
     /**
@@ -75,7 +75,7 @@ class UserController extends Controller
     {
         $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
 
-        return view('admin.user-form', compact('user'));
+        return view('admin.user.edit', compact('user'));
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 // use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EntertainmentVenueController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\HallController;
 
 /*
@@ -37,13 +38,21 @@ Route::controller(HomeController::class)
         Route::get('/', 'index')->name('home');
     });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin/')->name('admin.')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::resource('users', UserController::class)->names('users');
     Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment_venues');
-    Route::resource('halls', HallController::class)->except(['create', 'edit'])->names('halls');
-    Route::get('entertainment-venues/{entertainmentVenue}/halls/create', [HallController::class, 'create'])->name('halls.create');
+    // Route::resource('halls', HallController::class)->except(['create', 'edit'])->names('halls');
+    Route::prefix('entertainment-venues/{entertainmentVenue}/halls/')
+    ->name('halls.')
+    ->controller(HallController::class)
+    ->group(function () {
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('edit', 'edit')->name('edit');
+    });
+    Route::resource('events', EventController::class)->names('events');
 
 });
 

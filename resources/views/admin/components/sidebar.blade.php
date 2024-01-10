@@ -8,7 +8,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link{{ Request::url() === route('admin.users.index') ? ' active' : '' }}" href="{{ route('admin.users.index') }}">
+            <a class="nav-link{{ Request::url() === route('admin.users.index') ? ' active' : '' }}"
+                href="{{ route('admin.users.index') }}">
                 Users
             </a>
         </li>
@@ -16,6 +17,12 @@
             <a class="nav-link{{ Request::url() === route('admin.entertainment_venues.index') ? ' active' : '' }}"
                 href="{{ route('admin.entertainment_venues.index') }}">
                 Entertainment Venues
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{{ Request::url() === route('admin.events.index') ? ' active' : '' }}"
+                href="{{ route('admin.events.index') }}">
+                Events
             </a>
         </li>
     </ul>
