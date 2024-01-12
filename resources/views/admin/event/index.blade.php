@@ -23,18 +23,13 @@
                     <th><a
                             href="{{ route('admin.events.index', ['sort_by' => 'name', 'sort_order' => sortOrder('name')]) }}">Name</a>
                     </th>
-                    <th><a
-                            href="{{ route('admin.events.index', [
-                                'sort_by' => 'email',
-                                'sort_order' => request('sort_by') == 'email' && request('sort_order') == 'asc' ? 'desc' : 'asc',
-                            ]) }}">Email</a>
-                    </th>
+                    <th>Trailer Url</th>
 
                     <th><a
                             href="{{ route('admin.events.index', [
-                                'sort_by' => 'role',
-                                'sort_order' => request('sort_by') == 'role' && request('sort_order') == 'asc' ? 'desc' : 'asc',
-                            ]) }}">Role</a>
+                                'sort_by' => 'description',
+                                'sort_order' => request('sort_by') == 'description' && request('sort_order') == 'asc' ? 'desc' : 'asc',
+                            ]) }}">Description</a>
                     </th>
                     <th>Image</th>
                     <th>Action</th>
@@ -47,7 +42,8 @@
                         <td>{{ $event->name }}</td>
                         <td>{{ $event->trailer_url }}</td>
                         <td>{{ $event->description }}</td>
-                        <td><img src="{{ Storage::url($event->poster_picture_url) }}" /></td>
+                        <td><img style="height: 200px" src="{{ Storage::url($event->poster_picture_url) }}" /></td>
+
                         <td>
                             <a href="{{ route('admin.events.edit', ['event' => $event->id]) }}"
                                 class="btn btn-sm btn-warning">Edit</a>

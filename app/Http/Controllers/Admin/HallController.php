@@ -79,11 +79,10 @@ class HallController extends Controller
         }, $updatedLayout);
 
         $hall = new Hall([
+            'entertainment_venue_id' => $request->input('entertainment-venue-id'),
             'layout' => json_encode($updatedLayout),
         ]);
         $hall->save();
-        $entertainmentVenue = EntertainmentVenue::findOrFail($request->input('entertainment-venue-id'));
-        $entertainmentVenue->halls()->attach($hall->id);
 
         return redirect()
             ->route('admin.entertainment_venues.index')

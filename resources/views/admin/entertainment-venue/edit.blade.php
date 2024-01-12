@@ -34,10 +34,10 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name"
-                    value="{{ old('name', $venue->name) }}">
-                @error('name')
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" name="description"
+                    value="{{ old('description', $venue->description) }}">
+                @error('description')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>

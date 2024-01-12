@@ -32,6 +32,11 @@ class EntertainmentVenue extends Model
 
     public function halls()
     {
-        return $this->belongsToMany(Hall::class);
+        return $this->hasMany(Hall::class);
+    }
+
+    public function entertainmentVenueEvent()
+    {
+        return $this->belongsToMany(Session::class);
     }
 }

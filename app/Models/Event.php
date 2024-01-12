@@ -15,4 +15,9 @@ class Event extends Model
         'trailer_url',
         'poster_picture_url',
     ];
+
+    public function entertainmentVenueEvent()
+    {
+        return $this->belongsToMany(Session::class);
+    }
 }

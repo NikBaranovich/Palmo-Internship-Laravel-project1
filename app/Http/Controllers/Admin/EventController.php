@@ -23,6 +23,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
+        // dd(Storage::exists('myImage.jpg'));
         $events = $this->event->query()
             ->when($request->has('sort_by'), function (Builder $query) use ($request) {
                 $query->orderBy(
@@ -31,7 +32,6 @@ class EventController extends Controller
                 );
             })
             ->paginate(10);
-        // dd( Storage::exists('myImage.jpg'));
         return view('admin.event.index', compact('events'));
     }
 

@@ -25,5 +25,17 @@
                 Events
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link{{ Request::url() === route('admin.sessions.index') ? ' active' : '' }}"
+                href="{{ route('admin.sessions.index') }}">
+                Sessions
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{{ Request::url() === route('admin.tickets.index') ? ' active' : '' }}"
+                href="{{ route('admin.tickets.index') }}">
+                Tickets
+            </a>
+        </li>
     </ul>
 </aside>

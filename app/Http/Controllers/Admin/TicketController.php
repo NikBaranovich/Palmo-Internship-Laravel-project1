@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateTicketRequest;
 use App\Models\EntertainmentVenue;
-use Illuminate\Http\Request;
+use App\Models\Event;
+use App\Models\Session;
+use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\VenueType;
+use Illuminate\Http\Request;
 
-class EntertainmentVenueController extends Controller
+class TicketController extends Controller
 {
     public function __construct(
-        protected EntertainmentVenue $venue
+        protected Ticket $ticket
     ) {
-        $this->middleware('auth');
         $this->middleware('admin');
     }
     /**
@@ -21,11 +23,7 @@ class EntertainmentVenueController extends Controller
      */
     public function index(Request $request)
     {
-        $venueTypes = VenueType::all();
-
-        $venues = EntertainmentVenue::all();
-
-        $venues = $this->venue->query()
+        $tickets = $this->ticket->query()
             ->when($request->has('sort_by'), function (Builder $query) use ($request) {
                 $query->orderBy(
                     $request->input('sort_by'),
@@ -33,30 +31,26 @@ class EntertainmentVenueController extends Controller
                 );
             })
             ->paginate(10);
-
-        return view('admin.entertainment-venue.index', compact('venueTypes', 'venues'));
+        return view('admin.ticket.index', compact('tickets'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(EntertainmentVenue $venue)
+    public function create(Ticket $ticket)
     {
-        $venueTypes = VenueType::all();
-
-        return view('admin.entertainment-venue.edit', compact('venue', 'venueTypes'));
+        $sessions = Session::all();
+        return view('admin.ticket.edit', compact('ticket', 'sessions'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateTicketRequest $request)
     {
-        $this->venue->create($request->except('_token'));
+        $this->ticket->create($request->except('_token'));
 
-        return redirect()
-            ->route('admin.entertainment_venues.index')
-            ->with('success', 'Venue successfully created.');
+        return redirect()->route('admin.tickets.index')->with('success', 'Ticket saved successfully');
     }
 
     /**
@@ -89,14 +83,5 @@ class EntertainmentVenueController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function search(Request $request)
-    {
-        dd(123);
-        return EntertainmentVenue::query()
-            ->where('name', 'LIKE', "%{$request->query('name')}%")
-            ->get(['id', 'name'])
-            ->toArray();
     }
 }

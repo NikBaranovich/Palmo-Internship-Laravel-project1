@@ -18,15 +18,15 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(2)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@example.com',
-        //     'email_verified_at' => null,
-        //     'password' => Hash::make('qwerty'),
-        //     'role' => 'admin',
-        //     'remember_token' => Str::random(60)
-        // ]);
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'email_verified_at' => null,
+            'password' => Hash::make('qwerty'),
+            'role' => 'admin',
+            'remember_token' => Str::random(60)
+        ]);
 
-        // \App\Models\VenueType::factory(10)->create();
+        \App\Models\VenueType::factory(10)->create();
     }
 }
