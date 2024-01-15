@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('seat_groups', function (Blueprint $table) {
-            $table->id();
+            $table->string('id')->unique();
             $table->string('name')->nullable();
+            $table->string('color')->nullable();
             $table->integer('number')->nullable();
+            $table->foreignId('hall_id')->constrained('halls')->cascadeOnDelete();
             // $table->timestamps();
         });
     }

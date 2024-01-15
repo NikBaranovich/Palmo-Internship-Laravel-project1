@@ -9,9 +9,9 @@ class Session extends Model
 {
     use HasFactory;
 
-    public function entertainmentVenue()
+    public function hall()
     {
-        return $this->belongsTo(EntertainmentVenue::class);
+        return $this->belongsTo(Hall::class);
     }
 
     public function event()

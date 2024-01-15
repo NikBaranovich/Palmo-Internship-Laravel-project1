@@ -45,9 +45,9 @@
                     <td contenteditable="true">{{ $session->email }}</td>
                     <td contenteditable="true">{{ $session->role }}</td>
                     <td>
-                        <a href="{{ route('admin.sessions.edit', ['user' => $user->id]) }}"
+                        <a href="{{ route('admin.sessions.edit', ['session' => $session->id]) }}"
                             class="btn btn-sm btn-warning">Edit</a>
-                        <form class="d-inline" action="{{ route('admin.sessions.destroy', $user->id) }}" method="post"
+                        <form class="d-inline" action="{{ route('admin.sessions.destroy', $session->id) }}" method="post"
                             id="deleteForm">
                             @csrf
                             @method('DELETE')

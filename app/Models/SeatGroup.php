@@ -11,10 +11,18 @@ class SeatGroup extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'number'];
+    protected $fillable = ['id','name', 'number', 'color', 'hall_id'];
 
     public function seats()
     {
         return $this->hasMany(Seat::class);
+    }
+    public function tables()
+    {
+        return $this->hasMany(Table::class);
+    }
+    public function hall()
+    {
+        return $this->belongsTo(Hall::class);
     }
 }

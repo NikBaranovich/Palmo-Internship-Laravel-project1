@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('halls', function (Blueprint $table) {
             $table->id();
+            $table->integer('number');
             $table->json('layout')->nullable();
             $table->foreignId('entertainment_venue_id')->constrained('entertainment_venues')->cascadeOnDelete();
             $table->timestamps();

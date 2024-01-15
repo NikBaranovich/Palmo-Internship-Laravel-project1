@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->decimal('price');
             $table->foreignId('session_id')->constrained('sessions')->cascadeOnDelete();
-            $table->foreignId('seat_group_id')->constrained('seat_groups')->cascadeOnDelete();
+            $table->string('seat_group_id');
+            $table->foreign('seat_group_id')->references('id')->on('seat_groups')->cascadeOnDelete();
             $table->timestamps();
         });
     }

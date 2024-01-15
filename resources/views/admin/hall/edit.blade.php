@@ -16,6 +16,8 @@
             </div>
         @endif
 
+
+
         <div class="row">
             <div class="col-md-3">
                 <div class="card">
@@ -40,6 +42,15 @@
                     @if ($hall->exists)
                         @method('PUT')
                     @endif
+
+                    <div class="form-group">
+                        <label for="name">Number:</label>
+                        <input type="text" class="form-control" id="number" name="number"
+                            value="{{ old('number', $hall->number) }}">
+                        @error('number')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                     <div class="container">
                         <div class="row">
@@ -112,6 +123,10 @@
                             <label for="groupNumber">Group Number:</label>
                             <input type="text" class="form-control" id="groupNumber" name="groupNumber" required>
                         </div>
+                        <div class="form-group">
+                            <label for="groupName">Group Color:</label>
+                            <input type="color" class="form-control" id="color" name="color" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -142,24 +157,25 @@
         function saveSeatGroup() {
             var groupName = document.getElementById('groupName').value;
             var groupNumber = document.getElementById('groupNumber').value;
-
+            var color = document.getElementById('color').value;
             closeAddSeatGroupModal();
 
             var seatGroupsContainer = document.getElementById('seat-groups');
             var newGroup = document.createElement('div');
-
+            let groupId = '{{ uniqid() }}' + groupCounter;
             newGroup.innerHTML = `
                 <label>
-                    <input type="radio" name="seatGroup" value='${groupCounter}'>
+                    <input type="radio" name="seatGroup" value='${JSON.stringify({groupId, color})}'>
                     <strong>${groupName}</strong>
                     <span>${groupNumber}</span>
                 </label>
             `;
             seatGroupsContainer.appendChild(newGroup);
             groupData = {
-                id: groupCounter,
+                id: groupId,
                 name: groupName,
-                number: groupNumber
+                number: groupNumber,
+                color
             };
             groups.push(JSON.stringify(groupData));
 
@@ -232,9 +248,9 @@
                 let original = event.target;
                 let clone = original.cloneNode(true);
 
-                var selectedGroupId = document.querySelector('input[name="seatGroup"]:checked').value;
-                clone.setAttribute('data-group-id', selectedGroupId);
-
+                var selectedGroup = JSON.parse(document.querySelector('input[name="seatGroup"]:checked').value);
+                clone.setAttribute('data-group-id', selectedGroup.groupId);
+                clone.style.fill = selectedGroup.color;
                 clone.classList.add('layout-element');
                 clone.classList.remove('element');
                 placesGroup.appendChild(clone);

@@ -14,6 +14,7 @@
             padding: 5px;
             max-height: 10rem;
             overflow-y: auto;
+            z-index: 999;
         }
 
         option {
@@ -44,6 +45,21 @@
             @endif
 
             <div class="form-group">
+                <label for="venue_id">Select venue</label>
+                <fieldset class="position-relative">
+                    <input type="text" class="form-control" autocomplete="off" list="" name="venue_id"
+                        id="venue" />
+                    <datalist class="visually-hidden" id="venue-options"> </datalist>
+                    {{-- @if (isset($errors['event-user-send'])) {
+                        <div  class='invalid-input-error'>{$errors['event-user-send']}
+                        </div>";
+                    }
+                    @endif --}}
+                    </select>
+                </fieldset>
+            </div>
+
+            <div class="form-group">
                 <label for="hall_id">Select hall</label>
                 <fieldset class="position-relative">
                     <input type="text" class="form-control" autocomplete="off" list="" name="hall_id"
@@ -54,24 +70,15 @@
                         </div>";
                     }
                     @endif --}}
-                    <div id="selected-users"></div>
                     </select>
                 </fieldset>
             </div>
-
-            {{-- <select name="entertainment_venue_id" id="entertainment_venue_id">
-                @foreach ($halls as $hall)
-                    <option value="{{ $hall->id }}" {{ old('entertainment_venue') == $hall->id ? 'selected' : '' }}>
-                        {{ $hall->entertainmentVenue->name }}, hall {{ $hall->id }}
-                    </option>
-                @endforeach
-            </select> --}}
 
             <div class="col-md-9">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-7">
-                            <h3>Drag and Drop Area</h3>
+                            <h3>Layout</h3>
                             <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
                                 xmlns="http://www.w3.org/2000/svg" version="1.1"
                                 xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -87,24 +94,7 @@
                                     @endfor
                                 </g>
                                 <g id="places" width="100%" height="100%">
-                                    @foreach (json_decode($halls[1]->layout) as $element)
-                                        @if ($element->type == 'table')
-                                            {
-                                            <circle class="element" data-element-type="table" data-height="20"
-                                                cx="{{ $element->x + $element->width }}"
-                                                cy="{{ $element->y + $element->width }}" r="{{ $element->width }}"
-                                                style="fill: lightblue;"></circle>
-                                            }
-                                        @endif
-                                        @if ($element->type == 'seat')
-                                            {
-                                            <rect class="element" width = " {{ $element->width }}"
-                                                height = " {{ $element->height }}" x="{{ $element->x }}"
-                                                y="{{ $element->y }}" data-element-type="seat" style="fill: lightgreen;">
-                                            </rect>
-                                            }
-                                        @endif
-                                    @endforeach
+
                                 </g>
                             </svg>
                         </div>
@@ -115,7 +105,6 @@
                                     <h6>Seat Groups</h6>
                                     <div id="seat-groups">
                                     </div>
-                                    <select name="groups[]" id="input-groups" multiple style="display: none;">
                                     </select>
                                 </div>
                             </div>
@@ -156,25 +145,35 @@
     </div>
 
     <script>
-        const hallInput = document.getElementById("hall");
+        const venueInput = document.getElementById("venue");
+        const datalistVenues = document.getElementById("venue-options");
         const datalistHalls = document.getElementById("hall-options");
+        const hallInput = document.getElementById("hall");
+        const seatGroupsContainer = document.getElementById('seat-groups');
 
-        function fetchHalls(searchHall) {
+        function fetchVenues(searchVenue) {
+            if (!searchVenue) {
+                return;
+            }
             $.ajax({
                 type: 'GET',
-                url: "{{ route('admin.entertainment_venues.search') }}",
+                url: "{{ route('api.entertainment_venues.search') }}",
                 data: {
-                    name: searchHall
+                    name: searchVenue
                 },
-                success: function(halls) {
-                    console.log(halls);
+                success: function(venues) {
 
-                    var hallsArray = Object.keys(halls).map(function(key) {
-                        return halls[key];
+                    var venuesArray = Object.keys(venues).map(function(key) {
+                        if (venues[key].name === searchVenue) {
+                            fetchHalls(venues[key].id);
+                        } else {
+                            datalistHalls.innerHTML = "";
+                        }
+                        return venues[key];
                     });
-                    datalistHalls.innerHTML = hallsArray.reduce(
-                        (layout, hall) =>
-                        (layout += `<option value="${hall.id}">${hall.name}</option>`),
+                    datalistVenues.innerHTML = venuesArray.reduce(
+                        (layout, venue) =>
+                        (layout += `<option value="${venue.id}">${venue.name} </option>`),
                         ``
                     );
                 },
@@ -182,8 +181,68 @@
                     console.error(response);
                 }
             });
+        }
 
+        function fetchHalls(searchHall) {
+            if (!searchHall) {
+                return;
+            }
+            $.ajax({
+                type: 'GET',
+                url: "{{ route('api.halls.search') }}",
+                data: {
+                    venueId: searchHall
+                },
+                success: function(halls) {
+                    var hallsArray = Object.keys(halls).map(function(key) {
+                        return halls[key];
+                    });
+                    datalistHalls.innerHTML = hallsArray.reduce(
+                        (layout, hall) =>
+                        (layout += `<option value='${JSON.stringify({
+                            id: hall.id,
+                            layout: hall.layout
+                        })}'>${hall.id} Hall</option>`),
+                        ``
+                    );
+                },
+                error: function(response) {
+                    console.error(response);
+                }
+            });
+        }
 
+        function fetchGroups(hallId) {
+            if (!hallId) {
+                return;
+            }
+            $.ajax({
+                type: 'GET',
+                url: "{{ route('api.seat_groups.search') }}",
+                data: {
+                    hallId
+                },
+                success: function(groups) {
+                    console.log(groups);
+                    const groupsArray = Object.keys(groups).map(function(key) {
+                        return groups[key];
+                    });
+                    seatGroupsContainer.innerHTML = groupsArray.reduce(
+                        (layout, group) =>
+                        (layout += `<div>
+                            <label>
+                            <input type="radio" name="seatGroup" value='${group.id}'>
+                            <strong>${group.name}</strong>
+                            <span>${group.number}</span>
+                            </label>
+                            </div>`),
+                        ``
+                    );
+                },
+                error: function(response) {
+                    console.error(response);
+                }
+            });
         }
 
         function debounce(func, timeout = 300) {
@@ -195,9 +254,8 @@
                 }, timeout);
             };
         }
-        hallInput.oninput = debounce(() => {
-            console.log('Input!');
-            const halls = fetchHalls(hallInput.value)
+        venueInput.oninput = debounce(() => {
+            const halls = fetchVenues(venueInput.value)
         });
 
         const hideElement = (element) => {
@@ -206,8 +264,98 @@
         const showElement = (element) => {
             element.classList.remove("visually-hidden");
         };
+
+        venueInput.onfocus = () => {
+            showElement(datalistVenues);
+        };
         hallInput.onfocus = () => {
             showElement(datalistHalls);
         };
+        hallInput.addEventListener("focusout", () => {
+            handleSearchInputFocusOut(datalistHalls);
+        });
+
+        venueInput.addEventListener("focusout", () => {
+            handleSearchInputFocusOut(datalistVenues);
+        });
+
+        function handleSearchInputFocusOut(datalist) {
+            setTimeout(() => {
+                hideElement(datalist);
+            }, 300);
+        }
+
+        datalistVenues.addEventListener("click", handleDatalistVenueInputClick);
+
+        function handleDatalistVenueInputClick(event) {
+            const target = event.target;
+
+            if (target.tagName === "OPTION") {
+                venueInput.value = target.text;
+                fetchHalls(target.value);
+            }
+            hideElement(datalistVenues);
+        }
+
+        datalistHalls.addEventListener("click", handleDatalistHallsInputClick);
+
+        function handleDatalistHallsInputClick(event) {
+            const target = event.target;
+
+            if (target.tagName === "OPTION") {
+                hall = JSON.parse(target.value);
+
+                hallInput.value = target.text;
+                fetchGroups(hall.id);
+                displayLayout(hall.layout);
+            }
+
+            hideElement(datalistVenues);
+        }
+
+        function displayLayout(layout) {
+            const elements = JSON.parse(layout);
+
+            const svgContainer = document.getElementById("places");
+
+            while (svgContainer.firstChild) {
+                svgContainer.removeChild(svgContainer.firstChild);
+            }
+
+            elements.forEach(element => {
+                console.log(element.id);
+                element.id = parseInt(element.id);
+
+                element.x = parseInt(element.x);
+                element.y = parseInt(element.y);
+                element.width = parseInt(element.width);
+                element.height = parseInt(element.height);
+
+                if (element.type === 'table') {
+
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("class", "element");
+                    circle.setAttribute("data-element-type", "table");
+                    circle.setAttribute("data-height", "20");
+                    circle.setAttribute("cx", element.x + element.width);
+                    circle.setAttribute("cy", element.y + element.width);
+                    circle.setAttribute("r", element.width);
+                    circle.setAttribute("style", `fill: ${element.color};`);
+                    svgContainer.appendChild(circle);
+                }
+
+                if (element.type === 'seat') {
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("class", "element");
+                    rect.setAttribute("width", element.width);
+                    rect.setAttribute("height", element.height);
+                    rect.setAttribute("x", element.x);
+                    rect.setAttribute("y", element.y);
+                    rect.setAttribute("data-element-type", "seat");
+                    rect.setAttribute("style", `fill: ${element.color};`);
+                    svgContainer.appendChild(rect);
+                }
+            });
+        }
     </script>
 @endsection

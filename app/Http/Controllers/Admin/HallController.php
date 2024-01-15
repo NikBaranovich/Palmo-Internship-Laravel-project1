@@ -41,27 +41,26 @@ class HallController extends Controller
      */
     public function store(Request $request)
     {
+        $hall = new Hall([
+            'entertainment_venue_id' => $request->input('entertainment-venue-id'),
+            'number' => $request->input('number'),
+        ]);
+        $hall->save();
+
         $seatGroups = $request->input('groups', []);
-        $updatedLayout = [];
         foreach ($seatGroups as $seatGroupData) {
             $seatGroupData = json_decode($seatGroupData, true);
             $seatGroup = new SeatGroup([
+                'id' => $seatGroupData['id'],
                 'name' => $seatGroupData['name'],
                 'number' => $seatGroupData['number'],
+                'hall_id' => $hall->id,
             ]);
             $seatGroup->save();
-
-            $layout = json_decode($request->input('layout', '[]'), true);
-
-            foreach ($layout as $element) {
-                if ($element['group'] == $seatGroupData['id']) {
-                    $element['group'] = $seatGroup->id;
-                }
-                $updatedLayout[] = $element;
-            }
         }
+        $layout = json_decode($request->input('layout', '[]'), true);
 
-        $updatedLayout = array_map(function ($element) {
+        $layout = array_map(function ($element) {
             $model = match ($element['type']) {
                 'seat' =>  new Seat([
                     'number' => 0,
@@ -72,17 +71,15 @@ class HallController extends Controller
                 ]),
             };
             $model->save();
-
-            unset($element['group']);
-
+            $element['id'] = $model->id;
             return $element;
-        }, $updatedLayout);
+        }, $layout);
+        $layout = array_map(function ($element) {
+            unset($element['group']);
+            return $element;
+        }, $layout);
 
-        $hall = new Hall([
-            'entertainment_venue_id' => $request->input('entertainment-venue-id'),
-            'layout' => json_encode($updatedLayout),
-        ]);
-        $hall->save();
+        $hall->update(['layout' => json_encode($layout)]);
 
         return redirect()
             ->route('admin.entertainment_venues.index')

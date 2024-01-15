@@ -19,7 +19,7 @@
 
         .sidebar {
             width: 250px;
-            background-color: #333;
+            background-color: #2c3037;
             color: #fff;
             padding: 20px;
             box-sizing: border-box;
@@ -67,13 +67,6 @@
             display: flex;
         }
 
-        .sidebar {
-            width: 250px;
-            background-color: #2c3037;
-            padding: 20px;
-            border-top-right-radius: 15px;
-            border-bottom-right-radius: 15px;
-        }
     </style>
     <title>Admin Panel</title>
 </head>

@@ -10,11 +10,16 @@ class Seat extends Model
     use HasFactory;
 
     public $timestamps = false;
-    
+
     protected $fillable = ['number', 'seat_group_id'];
 
     public function seatGroup()
     {
         return $this->belongsTo(SeatGroup::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

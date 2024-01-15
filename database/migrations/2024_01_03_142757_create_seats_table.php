@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
             $table->integer('number');
-            $table->foreignId('seat_group_id')->constrained('seat_groups')->cascadeOnDelete();
-            // $table->timestamps();
+            $table->string('seat_group_id');
+            $table->foreign('seat_group_id')->references('id')->on('seat_groups')->cascadeOnDelete();            // $table->timestamps();
         });
     }
 
