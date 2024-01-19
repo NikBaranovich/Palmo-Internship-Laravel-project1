@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\HallController;
 use App\Http\Controllers\Admin\SessionController;
 use App\Http\Controllers\Admin\TicketController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ImageController;
 
 /*
@@ -31,8 +32,9 @@ Route::controller(LoginController::class)
     ->group(function () {
         Route::get('login', 'showLoginForm')->name('login');
         Route::post('login', 'login')->name('login.auth');
-        Route::post('logout', 'logout')->name('logout');
+        Route::get('logout', 'logout')->name('logout');
     });
+
 
 Route::controller(HomeController::class)
     ->group(function () {

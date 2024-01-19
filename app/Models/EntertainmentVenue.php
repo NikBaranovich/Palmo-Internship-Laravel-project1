@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,5 +39,10 @@ class EntertainmentVenue extends Model
     public function entertainmentVenueEvent()
     {
         return $this->belongsToMany(Session::class);
+    }
+
+    public function scopeByName(Builder $query, $name)
+    {
+        $query->where('name', 'like', "%{$name}%");
     }
 }

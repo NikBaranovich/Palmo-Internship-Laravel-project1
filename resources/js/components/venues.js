@@ -1,13 +1,12 @@
-// import {fetchVenues} from './components/venues.js';
+console.log("Hi 2");
 
-console.log("Hello, World!");
-const fetchVenues = (searchVenue, datalistVenues) => {
+export function fetchVenues(searchVenue, datalistVenues) {
     if (!searchVenue) {
         return;
     }
     $.ajax({
         type: 'GET',
-        url: "/api/entertainment_venues/search",
+        url: "{{ route('api.entertainment_venues.search') }}",
         data: {
             name: searchVenue
         },
@@ -33,10 +32,4 @@ const fetchVenues = (searchVenue, datalistVenues) => {
     });
 }
 
-window.fetchVenues = fetchVenues;
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
-
+export default {fetchVenues}

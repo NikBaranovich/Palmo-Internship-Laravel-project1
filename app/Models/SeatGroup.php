@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\SeatGroupCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class SeatGroup extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['id','name', 'number', 'color', 'hall_id'];
+    protected $fillable = ['id', 'name', 'number', 'color', 'hall_id'];
 
     public function seats()
     {
@@ -25,4 +26,13 @@ class SeatGroup extends Model
     {
         return $this->belongsTo(Hall::class);
     }
+
+    public function sessionSeatGroups()
+    {
+        return $this->hasMany(SessionSeatGroup::class);
+    }
+
+    protected $casts = [
+        'id' => 'string',
+    ];
 }

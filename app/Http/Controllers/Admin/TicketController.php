@@ -7,14 +7,17 @@ use App\Http\Requests\CreateTicketRequest;
 use App\Models\EntertainmentVenue;
 use App\Models\Event;
 use App\Models\Session;
+use App\Models\SessionSeatGroup;
 use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
     public function __construct(
-        protected Ticket $ticket
+        protected Ticket $ticket,
+        protected SessionSeatGroup $sessionSeatGroup
     ) {
         $this->middleware('admin');
     }
@@ -46,9 +49,17 @@ class TicketController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateTicketRequest $request)
+    public function store(Request $request)
     {
-        $this->ticket->create($request->except('_token'));
+        $data = $request->except('_token');
+
+        $data['price'] = $this->sessionSeatGroup->session_seat_price;
+
+        $data['token'] = (string) Str::uuid();
+
+        dd($data);
+
+        $this->ticket->create($data);
 
         return redirect()->route('admin.tickets.index')->with('success', 'Ticket saved successfully');
     }

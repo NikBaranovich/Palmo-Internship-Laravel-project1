@@ -55,6 +55,7 @@ class HallController extends Controller
                 'name' => $seatGroupData['name'],
                 'number' => $seatGroupData['number'],
                 'hall_id' => $hall->id,
+                'color' => $seatGroupData['color'],
             ]);
             $seatGroup->save();
         }

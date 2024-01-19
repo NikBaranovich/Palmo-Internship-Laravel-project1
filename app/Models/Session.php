@@ -9,6 +9,9 @@ class Session extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['event_id', 'start_time', 'end_time', 'hall_id'];
+
+
     public function hall()
     {
         return $this->belongsTo(Hall::class);
@@ -22,5 +25,10 @@ class Session extends Model
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function sessionSeatGroups()
+    {
+        return $this->hasMany(SessionSeatGroup::class);
     }
 }

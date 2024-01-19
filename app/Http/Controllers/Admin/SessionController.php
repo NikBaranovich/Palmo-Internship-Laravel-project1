@@ -7,13 +7,15 @@ use App\Models\EntertainmentVenue;
 use App\Models\Event;
 use App\Models\Hall;
 use App\Models\Session;
+use App\Models\SessionSeatGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
     public function __construct(
-        protected Session $session
+        protected Session $session,
+        protected SessionSeatGroup $sessionSeatGroup
     ) {
         $this->middleware('admin');
     }
@@ -38,9 +40,7 @@ class SessionController extends Controller
      */
     public function create(Session $session)
     {
-        $events = Event::all();
-        $halls = Hall::all();
-        return view('admin.sessions.edit', compact('session', 'events', 'halls'));
+        return view('admin.sessions.edit', compact('session'));
     }
 
     /**
@@ -48,7 +48,15 @@ class SessionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $this->session->fill($request->only($this->session->getFillable()));
+        $this->session->save();
+        foreach ($request->groups as $group) {
+            $group = json_decode($group);
+
+            $this->sessionSeatGroup->create(array_merge((array)$group, ['session_id' => $this->session->id]));
+        }
+        return redirect()->route('admin.events.index')->with('success', 'Event saved successfully');
     }
 
     /**
