@@ -36,13 +36,12 @@ class EnabledLayoutItemCollection extends Resource
                 ->where('session_id', request()->query('session_id'))
                 ->where('seat_id', $data['id'])
                 ->exists();
-                
+
             $data['price'] = $this->resource->seatGroup->sessionSeatGroups()
                 ->where('session_id',  request()->query('session_id'))
                 ->get()
                 ->first()->price;
         }
-        // dump($data);
         return $data;
     }
 }

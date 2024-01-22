@@ -116,41 +116,7 @@
         </g>
     </svg> --}}
 
-    <div id="tooltip"
-        style="position: absolute; display: block; background-color: #f21a1a; padding: 5px; border: 1px solid #ccc;">
-    </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var seats = document.getElementsByClassName('seat');
-            var tooltip = document.getElementById('tooltip');
-            for (let seat of seats) {
-                seat.addEventListener('mouseover', function(event) {
-                    console.log("hello!");
-                    var price = event.target.getAttribute('data-price');
-                    showTooltip(event.clientX, event.clientY, 'Price: ' + price);
-                });
 
-                seat.addEventListener('mouseout', function() {
-                    hideTooltip();
-                });
-            };
-
-            function showTooltip(x, y, content) {
-                var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body
-                    .scrollTop || 0;
-
-                tooltip.style.left = x + 'px';
-                tooltip.style.top = y + scrollTop + 'px';
-                tooltip.innerHTML = content;
-                tooltip.style.display = 'block';
-            }
-
-            function hideTooltip() {
-                tooltip.style.display = 'none';
-            }
-        });
-    </script>
 @endsection

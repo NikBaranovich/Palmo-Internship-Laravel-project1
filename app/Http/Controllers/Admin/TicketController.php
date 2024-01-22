@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\Session;
 use App\Models\SessionSeatGroup;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ class TicketController extends Controller
 
         $data['token'] = (string) Str::uuid();
 
-        dd($data);
+        // dd($data);
 
         $this->ticket->create($data);
 
@@ -95,4 +96,5 @@ class TicketController extends Controller
     {
         //
     }
+
 }

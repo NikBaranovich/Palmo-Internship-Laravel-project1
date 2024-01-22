@@ -54,7 +54,6 @@ class UserController extends Controller
     public function store(CreateUserRequest $request, User $user)
     {
         $user->create($request->except('_token'));
-
         return redirect()
             ->route('admin.users.index')
             ->with('success', 'User successfully created.');

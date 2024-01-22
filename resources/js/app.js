@@ -1,6 +1,5 @@
-// import {fetchVenues} from './components/venues.js';
+import 'bootstrap';
 
-console.log("Hello, World!");
 const fetchVenues = (searchVenue, datalistVenues) => {
     if (!searchVenue) {
         return;

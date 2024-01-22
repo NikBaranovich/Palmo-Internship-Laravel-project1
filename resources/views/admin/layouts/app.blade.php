@@ -2,86 +2,45 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <!-- Montserrat Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+
+    @yield('resources')
+
+    <!-- Custom CSS -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="styles.css">
-    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/js/components/venues.js'])
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .admin-panel {
-            display: flex;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #2c3037;
-            color: #fff;
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed;
-            height: 100%;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .menu ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .menu a {
-            text-decoration: none;
-            color: #fff;
-            display: block;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-        }
-
-        .menu a:hover {
-            background-color: #555;
-        }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-            margin-left: 250px;
-        }
-
-        table {
-            color: #423838 !important;
-        }
-
-        .admin-panel {
-            height: 100vh;
-            display: flex;
-        }
-
-    </style>
-    <title>Admin Panel</title>
+    @vite(['resources/sass/app.scss', 'resources/js/app.js', 'resources/css/app.css'])
 </head>
 
 <body>
-    <div class="admin-panel">
-        @include('admin.components.sidebar')
-        <main class="content">
-            {{-- <h1>Welcome to the Admin Panel</h1> --}}
+    <div class="grid-container">
 
-            <!-- Content -->
+
+        <!-- Sidebar -->
+        @include('admin.components.sidebar')
+        <!-- End Sidebar -->
+
+        <!-- Main -->
+        <main class="main-container">
             @yield('content')
         </main>
+
+        <!-- End Main -->
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
 </body>
 
 </html>

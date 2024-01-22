@@ -16,8 +16,21 @@ class Event extends Model
         'poster_picture_url',
     ];
 
-    public function entertainmentVenueEvent()
+    public function sessions()
     {
-        return $this->belongsToMany(Session::class);
+        return $this->hasMany(Session::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasManyThrough(Ticket::class, Session::class);
+    }
+
+    public function scopeTopEventsByTickets($query, $limit = 5)
+    {
+        return $query
+            ->withCount('tickets')
+            ->orderByDesc('tickets_count')
+            ->limit($limit);
     }
 }

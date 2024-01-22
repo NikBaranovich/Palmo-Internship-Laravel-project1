@@ -1,40 +1,39 @@
-<aside class="sidebar">
-    <h2>Меню</h2>
-    <ul class="nav flex-column">
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.dashboard') ? 'active' : '' }}"
-                href="{{ route('admin.dashboard') }}">
-                Dashboard
+<aside id="sidebar">
+    <div class="sidebar-title">
+        <div class="sidebar-brand">
+            StagePassPro
+        </div>
+    </div>
+
+    <ul class="sidebar-list">
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.dashboard') }}">
+                <span class="material-icons-outlined">dashboard</span> Dashboard
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.users.index') ? 'active' : '' }}"
-                href="{{ route('admin.users.index') }}">
-                Users
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.users.index') }}">
+                <span class="material-icons-outlined">group</span> Users
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.entertainment_venues.index') ? ' active' : '' }}"
-                href="{{ route('admin.entertainment_venues.index') }}">
-                Entertainment Venues
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.entertainment_venues.index') }}">
+                <span class="material-icons-outlined">account_balance</span> Entertainment Venues
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.events.index') ? 'active' : '' }}"
-                href="{{ route('admin.events.index') }}">
-                Events
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.events.index') }}">
+                <span class="material-icons-outlined">theater_comedy</span> Events
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.sessions.index') ? 'active' : '' }}"
-                href="{{ route('admin.sessions.index') }}">
-                Sessions
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.sessions.index') }}">
+                <span class="material-icons-outlined">local_activity</span> Sessions
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-white {{ Request::url() === route('admin.tickets.index') ? 'active' : '' }}"
-                href="{{ route('admin.tickets.index') }}">
-                Tickets
+        <li class="sidebar-list-item">
+            <a href="{{ route('admin.tickets.index') }}">
+                <span class="material-icons-outlined">book_online</span> Tickets
             </a>
         </li>
     </ul>

@@ -31,4 +31,5 @@ class Session extends Model
     {
         return $this->hasMany(SessionSeatGroup::class);
     }
+
 }

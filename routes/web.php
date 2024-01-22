@@ -28,13 +28,6 @@ use App\Http\Controllers\ImageController;
 */
 
 
-Route::controller(LoginController::class)
-    ->group(function () {
-        Route::get('login', 'showLoginForm')->name('login');
-        Route::post('login', 'login')->name('login.auth');
-        Route::get('logout', 'logout')->name('logout');
-    });
-
 
 Route::controller(HomeController::class)
     ->group(function () {
@@ -42,7 +35,6 @@ Route::controller(HomeController::class)
     });
 
 Route::prefix('admin/')->name('admin.')->group(function () {
-    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::resource('users', UserController::class)->names('users');
     Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment_venues');

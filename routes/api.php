@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EntertainmentVenueController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\HallController;
 use App\Http\Controllers\Api\SeatGroupController;
 use App\Http\Controllers\Api\SessionController;
+use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\UserController;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +53,7 @@ Route::prefix('events')
     ->controller(EventController::class)
     ->group(function () {
         Route::get('search', 'search')->name('search');
+        Route::get('get-top', 'getTop')->name('get_top');
     });
 
 Route::prefix('sessions')
@@ -66,6 +70,21 @@ Route::prefix('users')
         Route::get('search', 'search')->name('search');
     });
 
+Route::prefix('tickets')
+    ->name('api.tickets.')
+    ->controller(TicketController::class)
+    ->group(function () {
+        Route::get('get-tickets-count-by-month', 'getTicketsCountByMonth')->name('get_tickets_count_by_month');
+    });
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('auth')
+    ->name('api.auth.')
+    ->controller(AuthController::class)
+    ->group(function () {
+        Route::get('register', 'register')->name('register');
+        Route::get('login', 'login')->name('login');
+    });

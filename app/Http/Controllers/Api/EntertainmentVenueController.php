@@ -10,7 +10,7 @@ use App\Models\VenueType;
 
 class EntertainmentVenueController extends Controller
 {
-    public function __construct()
+    public function __construct(protected EntertainmentVenue $entertainmentVenue)
     {
         $this->middleware('web');
     }
@@ -22,7 +22,7 @@ class EntertainmentVenueController extends Controller
         //     abort(401);
         // }
 
-        return EntertainmentVenue::query()
+        return $this->entertainmentVenue->query()
             ->byName($request->query('name'))
             ->get(['id', 'name'])
             ->toArray();
