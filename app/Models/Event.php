@@ -10,10 +10,12 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
+        'title',
+        'overview',
         'trailer_url',
-        'poster_picture_url',
+        'poster_path',
+        'backdrop_path',
+        'release_date'
     ];
 
     public function sessions()
@@ -26,11 +28,26 @@ class Event extends Model
         return $this->hasManyThrough(Ticket::class, Session::class);
     }
 
+    public function genres()
+    {
+        return $this->belongsToMany(EventGenre::class, 'event_event_genre');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
     public function scopeTopEventsByTickets($query, $limit = 5)
     {
-        return $query
+        $query
             ->withCount('tickets')
             ->orderByDesc('tickets_count')
             ->limit($limit);
+    }
+    public function scopeHasSessions($query)
+    {
+        $query
+            ->has('sessions');
     }
 }

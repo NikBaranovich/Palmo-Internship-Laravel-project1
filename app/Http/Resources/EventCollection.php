@@ -17,7 +17,15 @@ class EventCollection extends Resource
     {
         return [
             'id' => $this->resource->id,
-            'name' => $this->resource->name,
+            'title' => $this->resource->title,
+            'backdrop_path' => $this->resource->backdrop_path,
+            'overview' => $this->resource->overview,
+            'poster_path' => $this->resource->poster_path,
+            'title' => $this->resource->title,
+            'trailer_url' => $this->resource->trailer_url,
+            'views_count' => $this->resource->views_count,
+            'rating_avg' => $this->resource->ratings()->avg('vote'),
+            'rating_count' => $this->resource->ratings()->count(),
         ];
     }
 }

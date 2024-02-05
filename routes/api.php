@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\EntertainmentVenueController;
 use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\EventGenreController;
 use App\Http\Controllers\Api\HallController;
 use App\Http\Controllers\Api\SeatGroupController;
 use App\Http\Controllers\Api\SessionController;
@@ -26,14 +28,15 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('entertainment_venues')
-    ->name('api.entertainment_venues.')
+    ->name('entertainment_venues.')
     ->controller(EntertainmentVenueController::class)
     ->group(function () {
+        Route::get('/', 'index')->name('index');
         Route::get('search', 'search')->name('search');
     });
 
 Route::prefix('halls')
-    ->name('api.halls.')
+    ->name('halls.')
     ->controller(HallController::class)
     ->group(function () {
         Route::get('search', 'search')->name('search');
@@ -42,39 +45,48 @@ Route::prefix('halls')
     });
 
 Route::prefix('events')
-    ->name('api.events.')
+    ->name('events.')
     ->controller(EventController::class)
     ->group(function () {
+        Route::get('index', 'index')->name('index');
         Route::get('search', 'search')->name('search');
-    });
-
-Route::prefix('events')
-    ->name('api.events.')
-    ->controller(EventController::class)
-    ->group(function () {
-        Route::get('search', 'search')->name('search');
+        Route::get('filter', 'filter')->name('filter');
         Route::get('get-top', 'getTop')->name('get_top');
     });
 
 Route::prefix('sessions')
-    ->name('api.sessions.')
+    ->name('sessions.')
     ->controller(SessionController::class)
     ->group(function () {
         Route::get('find', 'find')->name('find');
     });
 
 Route::prefix('users')
-    ->name('api.users.')
+    ->name('users.')
     ->controller(UserController::class)
     ->group(function () {
         Route::get('search', 'search')->name('search');
     });
 
 Route::prefix('tickets')
-    ->name('api.tickets.')
+    ->name('tickets.')
     ->controller(TicketController::class)
     ->group(function () {
         Route::get('get-tickets-count-by-month', 'getTicketsCountByMonth')->name('get_tickets_count_by_month');
+    });
+
+Route::prefix('cities')
+    ->name('cities.')
+    ->controller(CityController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+Route::prefix('event-genres')
+    ->name('eventGenres.')
+    ->controller(EventGenreController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
     });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -82,7 +94,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('auth')
-    ->name('api.auth.')
+    ->name('auth.')
     ->controller(AuthController::class)
     ->group(function () {
         Route::get('register', 'register')->name('register');

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_event_type', function (Blueprint $table) {
-            // $table->id();
+        Schema::create('event_genres', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
             $table->foreignId('event_type_id')->constrained('event_types')->cascadeOnDelete();
-            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             // $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_event_type');
+        Schema::dropIfExists('event_genres');
     }
 };

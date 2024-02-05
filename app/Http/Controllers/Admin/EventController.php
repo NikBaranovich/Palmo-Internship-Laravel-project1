@@ -49,7 +49,7 @@ class EventController extends Controller
     public function store(CreateEventRequest $request)
     {
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('event_images', 'public');
+            $imagePath = $request->file('image')->store('events/backdrops', 'public');
             $request['poster_picture_url'] = $imagePath;
         }
         $this->event->create($request->except('_token'));

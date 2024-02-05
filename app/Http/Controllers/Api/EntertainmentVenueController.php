@@ -15,13 +15,17 @@ class EntertainmentVenueController extends Controller
         $this->middleware('web');
     }
 
+    public function index(Request $request)
+    {
+        return $this->entertainmentVenue->query()->get(['id', 'name']);
+    }
+
     public function search(Request $request)
     {
         // $token = $request->header('X-CSRF-TOKEN');
         // if (!$token || $token !== csrf_token()) {
         //     abort(401);
         // }
-
         return $this->entertainmentVenue->query()
             ->byName($request->query('name'))
             ->get(['id', 'name'])

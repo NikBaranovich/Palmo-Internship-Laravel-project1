@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <h6>Available Elements</h6>
                         <div id="element-list">
-                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <svg style="width: 100px;" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <circle class="element" data-element-type="table" data-width="20" data-height="20"
                                     cx="20" cy="20" r="20" style="fill: lightblue;"></circle>
                                 <rect class="element" data-element-type="seat" data-width="20" data-height="20"
@@ -264,7 +264,7 @@
                 },
                 listeners: {
                     move(event) {
-
+                        console.log("object");
                         let target = event.target;
 
                         let width = Math.round(event.rect.width / 5) * 5;

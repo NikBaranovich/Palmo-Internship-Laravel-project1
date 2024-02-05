@@ -38,18 +38,6 @@ class HallController extends Controller
     public function getEnabledHallElements(Request $request)
     {
 
-        // $hallId = Session::query()
-        //     ->where('id', request()->query('session_id'))
-        //     ->value('hall_id');
-
-
-        // return LayoutItemCollection::collection(Seat::query()
-        //     ->whereDoesntHave('tickets.session', function (Builder $query) use ($hallId) {
-        //         $query->where('id', request()->query('session_id'));
-        //     })
-        //     ->whereHas('seatGroup.hall', function (Builder $query) use ($hallId) {
-        //         $query->where('id', $hallId);
-        //     })->get());
 
 
         $hallId = Session::query()

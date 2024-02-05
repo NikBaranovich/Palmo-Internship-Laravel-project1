@@ -252,15 +252,15 @@
             });
         }
 
-        function fetchEvents(name) {
-            if (!name) {
+        function fetchEvents(title) {
+            if (!title) {
                 return;
             }
             $.ajax({
                 type: 'GET',
                 url: "{{ route('api.events.search') }}",
                 data: {
-                    name
+                    title
                 },
                 success: function(events) {
                     var eventsArray = Object.keys(events).map(function(key) {
@@ -269,7 +269,7 @@
 
                     datalistEvents.innerHTML = eventsArray.reduce(
                         (layout, event) =>
-                        (layout += `<option value="${event.id}">${event.name} </option>`),
+                        (layout += `<option value="${event.id}">${event.title} </option>`),
                         ``
                     );
                 },

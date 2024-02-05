@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('venue_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+        Schema::create('event_event_genre', function (Blueprint $table) {
+            $table->foreignId('event_genre_id')->constrained('event_genres')->cascadeOnDelete();
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('venue_types');
+        Schema::dropIfExists('event_event_genre');
     }
 };

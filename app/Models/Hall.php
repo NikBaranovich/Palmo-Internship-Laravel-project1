@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Resources\EnabledLayoutItemCollection;
 use App\Http\Resources\LayoutItemCollection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,6 +30,12 @@ class Hall extends Model
     {
         return $this->hasMany(Session::class);
     }
+
+    public function scopeByEntertainmentVenue(Builder $query, $id)
+    {
+        $query->where($query->qualifyColumn('entertainment_venue_id'), $id);
+    }
+
     public function getItemsList()
     {
 

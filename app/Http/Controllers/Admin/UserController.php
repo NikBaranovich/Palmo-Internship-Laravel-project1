@@ -8,18 +8,17 @@ use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
-
 class UserController extends Controller
 {
     public function __construct(
-        protected User $user
+        protected UserService $service
     ) {
-        $this->middleware('auth');
         $this->middleware('admin');
     }
 
@@ -28,14 +27,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->user->query()
-            ->when($request->has('sort_by'), function (Builder $query) use ($request) {
-                $query->orderBy(
-                    $request->input('sort_by'),
-                    $request->input('sort_order', 'asc')
-                );
-            })
-            ->paginate(10);
+        $users = $this->service->index($request);
 
         return view('admin.user.index', compact('users'));
     }
@@ -53,7 +45,8 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request, User $user)
     {
-        $user->create($request->except('_token'));
+        $this->service->save($request, $user);
+
         return redirect()
             ->route('admin.users.index')
             ->with('success', 'User successfully created.');
@@ -82,7 +75,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->except('_token'));
+        $this->service->save($request, $user);
 
         return redirect()
             ->route('admin.users.edit', $user)
@@ -94,7 +87,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
+        $this->service->delete($user);
 
         return redirect()
             ->route('admin.users.index')

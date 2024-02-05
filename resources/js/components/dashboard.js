@@ -1,5 +1,6 @@
 let topEvents;
 function fetchTopEvents() {
+
     $.ajax({
         type: 'GET',
         url: "http://localhost:8080/api/events/get-top",
@@ -7,14 +8,16 @@ function fetchTopEvents() {
             limit: 5
         },
         success: function(events) {
+            console.log(events);
             const formattedData = {
                 id: [],
                 names: [],
                 tickets_count: [],
             };
             events.forEach(event => {
+                console.log(event);
                 formattedData.id.push(event.id);
-                formattedData.names.push(event.name);
+                formattedData.names.push(event.title);
                 formattedData.tickets_count.push(event.tickets_count);
               });
             barChartOptions.series.push({

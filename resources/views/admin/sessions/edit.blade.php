@@ -184,40 +184,6 @@
             }, "");
         }
 
-        function fetchVenues(searchVenue) {
-            if (!searchVenue) {
-                return;
-            }
-            $.ajax({
-                type: 'GET',
-                url: "{{ route('api.entertainment_venues.search') }}",
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                data: {
-                    name: searchVenue
-                },
-                success: function(venues) {
-
-                    var venuesArray = Object.keys(venues).map(function(key) {
-                        if (venues[key].name === searchVenue) {
-                            fetchHalls(venues[key].id);
-                        } else {
-                            hallInput.innerHTML = "";
-                        }
-                        return venues[key];
-                    });
-                    datalistVenues.innerHTML = venuesArray.reduce(
-                        (layout, venue) =>
-                        (layout += `<option value="${venue.id}">${venue.name} </option>`),
-                        ``
-                    );
-                },
-                error: function(response) {
-                    console.error(response);
-                }
-            });
-        }
         let halls = [];
 
         function fetchHalls(searchHall) {
@@ -268,7 +234,7 @@
 
                     datalistEvents.innerHTML = eventsArray.reduce(
                         (layout, event) =>
-                        (layout += `<option value="${event.id}">${event.name} </option>`),
+                        (layout += `<option value="${event.id}">${event.title} </option>`),
                         ``
                     );
                 },
@@ -319,7 +285,7 @@
             };
         }
         venueInput.oninput = debounce(() => {
-            fetchVenues(venueInput.value)
+            fetchVenues(venueInput.value, datalistVenues)
         });
 
         eventInput.oninput = debounce(() => {

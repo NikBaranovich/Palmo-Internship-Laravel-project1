@@ -1,48 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Services;
 
-use App\Http\Controllers\Controller;
 use App\Models\EntertainmentVenue;
 use App\Models\Hall;
 use App\Models\Seat;
 use App\Models\SeatGroup;
 use App\Models\Table;
-use App\Services\HallService;
+use App\Repositories\HallRepository;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
-class HallController extends Controller
+class HallService extends BaseService
 {
     public function __construct(
-        protected HallService $service,
-        protected SeatGroup $seatGroup,
+        protected HallRepository $repository,
         protected Hall $hall,
         protected Seat $seat,
         protected Table $table,
+        protected SeatGroup $seatGroup,
+        protected EntertainmentVenue $entertainmentVenue,
     ) {
-        $this->middleware('admin');
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(Request $request)
     {
-        dd($this->service->index($request));
+        return $this->repository->index($request->entertainmentVenue);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Hall $hall, EntertainmentVenue $entertainmentVenue)
+    public function save($request, Hall $hall)
     {
-        return view('admin.hall.edit', compact('hall', 'entertainmentVenue'));
-    }
+        //todo refactor simplify
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request, Hall $hall)
-    {
         $hall = $this->hall->fill([
             'entertainment_venue_id' => $request->input('entertainment-venue-id'),
             'number' => $request->input('number'),
@@ -52,29 +41,30 @@ class HallController extends Controller
         $seatGroups = $request->input('groups', []);
         foreach ($seatGroups as $seatGroupData) {
             $seatGroupData = json_decode($seatGroupData, true);
-            // $seatGroup = $this->seatGroup->fill();
-            $this->seatGroup->create([
+            $seatGroup = $this->seatGroup->fill([
                 'id' => $seatGroupData['id'],
                 'name' => $seatGroupData['name'],
                 'number' => $seatGroupData['number'],
                 'hall_id' => $hall->id,
                 'color' => $seatGroupData['color'],
             ]);
+            $seatGroup->save();
         }
         $layout = json_decode($request->input('layout', '[]'), true);
 
         $layout = array_map(function ($element) {
             $model = match ($element['type']) {
-                'seat' =>  new Seat([
+                'seat' =>  $this->seat->fill([
                     'number' => 0,
                     'seat_group_id' => $element['group']
                 ]),
-                'table' => new Table([
+                'table' => $this->table->fill([
                     'seat_group_id' => $element['group']
                 ]),
             };
             $model->save();
             $element['id'] = $model->id;
+
             return $element;
         }, $layout);
         $layout = array_map(function ($element) {
@@ -83,42 +73,11 @@ class HallController extends Controller
             return $element;
         }, $layout);
 
-        $hall->update(['layout' => json_encode($layout)]);
-
-        return redirect()
-            ->route('admin.entertainment_venues.index')
-            ->with('success', 'Hall successfully created.');
+        return $hall->update(['layout' => json_encode($layout)]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function delete(Hall $hall)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return $hall->delete();
     }
 }
