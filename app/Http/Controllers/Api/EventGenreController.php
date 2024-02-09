@@ -10,6 +10,6 @@ class EventGenreController extends Controller
 {
     public function index(Request $request)
     {
-        return EventGenre::query()->get();
+        return EventGenre::query()->get(['id', 'name']);
     }
 }

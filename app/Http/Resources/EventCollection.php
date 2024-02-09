@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource as Resource;
+use App\Http\Resources\EventGenreCollection;
 
 class EventCollection extends Resource
 {
@@ -20,12 +21,14 @@ class EventCollection extends Resource
             'title' => $this->resource->title,
             'backdrop_path' => $this->resource->backdrop_path,
             'overview' => $this->resource->overview,
+            'release_date' => $this->resource->release_date,
             'poster_path' => $this->resource->poster_path,
-            'title' => $this->resource->title,
             'trailer_url' => $this->resource->trailer_url,
             'views_count' => $this->resource->views_count,
             'rating_avg' => $this->resource->ratings()->avg('vote'),
+            'tickets_count' => $this->resource->tickets()->count(),
             'rating_count' => $this->resource->ratings()->count(),
+            'genres' => EventGenreCollection::collection($this->resource->genres()->get()),
         ];
     }
 }

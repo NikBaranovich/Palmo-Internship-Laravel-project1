@@ -32,7 +32,9 @@ Route::prefix('entertainment_venues')
     ->controller(EntertainmentVenueController::class)
     ->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/list', 'getList')->name('get-list');
         Route::get('search', 'search')->name('search');
+        Route::get('get-by-city', 'getByCity')->name('getByCity');
     });
 
 Route::prefix('halls')
@@ -48,10 +50,9 @@ Route::prefix('events')
     ->name('events.')
     ->controller(EventController::class)
     ->group(function () {
-        Route::get('index', 'index')->name('index');
-        Route::get('search', 'search')->name('search');
-        Route::get('filter', 'filter')->name('filter');
-        Route::get('get-top', 'getTop')->name('get_top');
+        Route::get('/', 'index')->name('index');
+        Route::get('/{event}', 'show')->name('show');
+        Route::middleware('auth:sanctum')->post('/{event}/rate', 'rateEvent')->name('rate');
     });
 
 Route::prefix('sessions')
@@ -97,6 +98,8 @@ Route::prefix('auth')
     ->name('auth.')
     ->controller(AuthController::class)
     ->group(function () {
-        Route::get('register', 'register')->name('register');
-        Route::get('login', 'login')->name('login');
+        Route::middleware('auth:sanctum')->get('/', 'index')->name('index');
+        Route::post('register', 'register')->name('register');
+        Route::post('login', 'login')->name('login');
+        Route::middleware('auth:sanctum')->post('logout', 'logout')->name('logout');
     });

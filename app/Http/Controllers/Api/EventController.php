@@ -3,21 +3,44 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Event\FilterRequest;
 use App\Http\Resources\EventCollection;
 use App\Models\Event;
 use App\Models\Session;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use App\Http\Filters\EventFilter;
+use App\Models\Rating;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
     public function index(Request $request)
     {
-        return EventCollection::collection(Event::query()->hasSessions()->get());
+        $query = Event::query()
+            ->hasSessions()
+            ->whereHas('sessions', function (Builder $query) use ($request) {
+                $query
+                    ->byStartDate($request->query('start_date'))
+                    ->byCity($request->query('city'))
+                    ->byVenues($request->query('venues'));
+            })
+            ->byGenres($request->query('genres'))
+            ->topEventsByTickets($request->query('ticket_top'))
+            ->byTitle($request->query('title'));
+
+        if ($request->query('limit')) {
+            $results = $query->withLimit($request->query('limit'))->get();
+        } else {
+            $results = $query->paginate($request->query('per_page') ?: 5);
+        }
+
+        return EventCollection::collection($results);
     }
     public function show(Event $event)
     {
+        return new EventCollection($event);
     }
 
     public function search(Request $request)
@@ -27,48 +50,29 @@ class EventController extends Controller
             ->get());
     }
 
-    public function filter(Request $request)
+    public function rateEvent(Request $request, Event $event)
     {
-        $startDate = Carbon::parse($request->query('start_date'));
+        $request->validate([
+            'vote' => 'required|integer|min:1|max:5',
+        ]);
 
-        $endDate = clone $startDate;
-        $endDate->addDay();
+        // Create or update the rating
+        $rating = Rating::updateOrCreate(
+            ['user_id' => $request->user()->id, 'event_id' => $event->id],
+            ['vote' => $request->vote]
+        );
 
-        $dateRange = [
-            $startDate,
-            $endDate
-        ];
-        // dd($dateRange);
-        $venues = $request->query('venues');
-        $genres = $request->query('genres');
-        // dump($request->query('start_date'));
-        // dump(array_column($request->query('venues'), 'id'));
+        return response()->json(['message' => 'Event rated successfully', 'rating' => $rating]);
+    }
 
-        return EventCollection::collection(Event::query()
-            ->hasSessions()
-            ->whereHas('sessions', function (Builder $query) use ($request, $dateRange, $venues) {
-                $query
-                    ->when($request->query('start_date'), function (Builder $query) use ($dateRange) {
-                        $query->whereDate($query->qualifyColumn('start_time'), $dateRange);
-                    })
-                    ->when($request->query('venues'), function (Builder $query) use ($venues){
-                        $query->whereHas('hall.entertainmentVenue', function (Builder $query) use ($venues) {
-                            $query->whereIn($query->qualifyColumn('id'), array_column($venues, 'id'));
-                        });
-                    });
-            })
-            ->when($request->query('genres'), function (Builder $query) use ($genres){
-                $query->whereHas('genres', function (Builder $query) use ($genres) {
-                    $query->whereIn($query->qualifyColumn('id'), array_column($genres, 'id'));
-                });
-            })
-            ->get());
+    public function filter(FilterRequest $request)
+    {
     }
 
     public function getTop(Request $request)
     {
         return Event::query()
-            ->topEventsByTickets($request->query('limit'))
+            ->topEventsByTickets($request->query('ticket_top'))
             ->get()
             ->toArray();
     }

@@ -31,18 +31,33 @@ class EntertainmentVenue extends Model
         return $this->belongsTo(VenueType::class);
     }
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function halls()
     {
         return $this->hasMany(Hall::class);
     }
 
-    public function entertainmentVenueEvent()
-    {
-        return $this->belongsToMany(Session::class);
-    }
-
     public function scopeByName(Builder $query, $name)
     {
         $query->where('name', 'like', "%{$name}%");
+    }
+
+    public function scopeByCity(Builder $query, $city)
+    {
+        $query->when($city, function (Builder $query) use ($city) {
+            $query->where($query->qualifyColumn('city_id'), $city);
+        });
+    }
+    public function scopeByEvent(Builder $query, $event)
+    {
+        $query->when($event, function (Builder $query) use ($event) {
+            $query->whereHas('halls.sessions', function (Builder $query) use ($event) {
+                $query->where($query->qualifyColumn('event_id'), $event);
+            });
+        });
     }
 }

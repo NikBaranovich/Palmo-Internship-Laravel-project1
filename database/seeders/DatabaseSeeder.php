@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             // EntertainmentVenueSeeder::class,
             SessionSeeder::class,
             TicketSeeder::class,
-            RatingSeeder::class,
+            // RatingSeeder::class,
         ]);
     }
 }

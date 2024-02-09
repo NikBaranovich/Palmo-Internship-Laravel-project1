@@ -19,7 +19,7 @@ class EntertainmentVenueFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->sentence,
+            'name' => $this->faker->company,
             'city_id' => City::get()->random()->id,
             'address' => $this->faker->sentence,
             'description' => $this->faker->paragraph,

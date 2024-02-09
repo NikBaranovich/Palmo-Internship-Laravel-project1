@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,16 +39,40 @@ class Event extends Model
         return $this->hasMany(Rating::class);
     }
 
-    public function scopeTopEventsByTickets($query, $limit = 5)
+    public function scopeTopEventsByTickets($query, $ticket_top, $limit = 5)
     {
-        $query
-            ->withCount('tickets')
-            ->orderByDesc('tickets_count')
-            ->limit($limit);
+        $query->when($ticket_top, function (Builder $query) use ($limit) {
+            $query->withCount('tickets')
+                ->orderByDesc('tickets_count')
+                ->limit($limit);
+        });
     }
     public function scopeHasSessions($query)
     {
         $query
             ->has('sessions');
+    }
+
+    public function scopeWithLimit($query, $limit)
+    {
+        $query->when($limit, function (Builder $query) use ($limit) {
+            $query->limit($limit);
+        });
+    }
+
+    public function scopeByGenres($query, $genres)
+    {
+        $query
+            ->when($genres, function (Builder $query) use ($genres) {
+                $query->whereHas('genres', function (Builder $query) use ($genres) {
+                    $query->whereIn($query->qualifyColumn('id'), $genres);
+                });
+            });
+    }
+    public function scopeByTitle($query, $title)
+    {
+        $query->when($title, function (Builder $query) use ($title) {
+            $query->where('title', 'LIKE', "%{$title}%");
+        });
     }
 }

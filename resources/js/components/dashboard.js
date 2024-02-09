@@ -3,19 +3,18 @@ function fetchTopEvents() {
 
     $.ajax({
         type: 'GET',
-        url: "http://localhost:8080/api/events/get-top",
+        url: "http://localhost:8080/api/events/",
         data: {
-            limit: 5
+            limit:5,
+            ticket_top:true
         },
         success: function(events) {
-            console.log(events);
             const formattedData = {
                 id: [],
                 names: [],
                 tickets_count: [],
             };
             events.forEach(event => {
-                console.log(event);
                 formattedData.id.push(event.id);
                 formattedData.names.push(event.title);
                 formattedData.tickets_count.push(event.tickets_count);

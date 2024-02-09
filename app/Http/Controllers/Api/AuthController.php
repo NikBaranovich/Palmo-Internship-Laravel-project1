@@ -9,6 +9,7 @@ use App\Http\Resources\EventCollection;
 use App\Models\EntertainmentVenue;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -16,6 +17,12 @@ class AuthController extends Controller
     public function __construct(
         protected User $user
     ) {
+    }
+
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json($user);
     }
 
     public function register(RegisterRequest $request)
@@ -38,5 +45,10 @@ class AuthController extends Controller
         return response()->json([
             'token' => $user->createToken('API Token')->plainTextToken
         ], 201);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Event;
 use App\Models\Hall;
+use Carbon\Carbon;
 use DateInterval;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +20,11 @@ class SessionFactory extends Factory
      */
     public function definition(): array
     {
-        $startTime = $this->faker->unique()->dateTimeBetween($startDate = '-30 days', $endDate = 'now', $timezone = null);
+        $startDate = Carbon::now();
+        $endDate = $startDate->copy()->addDays(14);
+
+        $startTime = $this->faker->dateTimeBetween($startDate, $endDate);
+
         $endTime = clone $startTime;
         $endTime->add(new DateInterval('PT2H'));
         return [

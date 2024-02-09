@@ -42,7 +42,7 @@
                 @foreach ($tickets as $ticket)
                     <tr>
                         <td contenteditable="true">{{ $ticket->token }}</td>
-                        <td contenteditable="true">{{ dump($ticket->entertainmentVenueEvent->entertainmentVenue) }}</td>
+                        <td contenteditable="true">{{ dump($ticket->sessions->entertainmentVenue) }}</td>
                         <td contenteditable="true">{{ dump($ticket->entertainmentVenueEvent->event) }}</td>
                         <td contenteditable="true">{{ $ticket->role }}</td>
                         <td>
