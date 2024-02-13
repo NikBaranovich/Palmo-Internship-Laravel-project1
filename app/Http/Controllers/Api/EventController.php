@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    public function __construct(protected Rating $rating)
+    {
+        // $this->middleware('web');
+    }
+
     public function index(Request $request)
     {
         $query = Event::query()
@@ -50,19 +55,36 @@ class EventController extends Controller
             ->get());
     }
 
-    public function rateEvent(Request $request, Event $event)
+    public function rateEvent(Request $request, string $event)
     {
         $request->validate([
             'vote' => 'required|integer|min:1|max:5',
         ]);
 
-        // Create or update the rating
-        $rating = Rating::updateOrCreate(
-            ['user_id' => $request->user()->id, 'event_id' => $event->id],
-            ['vote' => $request->vote]
+        $this->rating->firstOrNew(
+            ['user_id' =>  $request->user()->id, 'event_id' => $event],
         );
+        $this->rating->user()->associate($request->user()->id);
+        $this->rating->event()->associate($event);
+        $this->rating->fill($request->only($this->rating->getFillable()));
 
-        return response()->json(['message' => 'Event rated successfully', 'rating' => $rating]);
+        $this->rating->save();
+        // if(!$ratingExists->get()->fir){
+        //     $this->rating->fill($request->only($this->rating->getFillable()));
+        //
+        //     $this->rating->save();
+        // }
+        // else{
+        //     $ratingExists
+        // }
+
+
+        // $rating = Rating::updateOrCreate(
+        //     ['user_id' => $request->user()->id, 'event_id' => $event->id],
+        //     ['vote' => $request->vote]
+        // );
+
+        return response()->json(['message' => 'Event rated successfully']);
     }
 
     public function filter(FilterRequest $request)

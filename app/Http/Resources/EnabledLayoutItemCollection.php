@@ -17,12 +17,19 @@ class EnabledLayoutItemCollection extends Resource
      */
     public function toArray(Request $request): array
     {
-        // $hallId = Session::query()
-        //     ->where('id', request()->query('session_id'))
-        //     ->value('hall_id');
+        $layout = json_decode($this->resource->seatGroup->hall->layout);
+        $elementPos = array_search($this->resource->id, array_column($layout, 'id'));
+        if ($elementPos !== false) {
+            $element = $layout[$elementPos];
+        }
+        $this->resource->loadMissing('seatGroup');
 
         $data = [
             'id' => $this->resource->id,
+            'x' => $element->x,
+            'y' => $element->y,
+            'width' => $element->width,
+            'height' => $element->height,
             'number' => $this->resource->number,
             'seat_group_id' => $this->resource->seat_group_id,
             'type' => strtolower(class_basename($this->resource)),
@@ -32,15 +39,15 @@ class EnabledLayoutItemCollection extends Resource
         ];
 
         if ($data['type'] === 'seat') {
+            $session = $request->query('session_id') ?: $request->session->id;
             $data['is_enabled'] = !$this->resource->tickets()
-                ->where('session_id', request()->query('session_id'))
+                ->where('session_id',  $session)
                 ->where('seat_id', $data['id'])
                 ->exists();
 
             $data['price'] = $this->resource->seatGroup->sessionSeatGroups()
-                ->where('session_id',  request()->query('session_id'))
-                ->get()
-                ->first()->price;
+                ->where('session_id',   $session)
+                ->value('price');
         }
         return $data;
     }

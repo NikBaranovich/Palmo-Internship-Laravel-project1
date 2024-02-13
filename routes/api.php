@@ -60,6 +60,7 @@ Route::prefix('sessions')
     ->controller(SessionController::class)
     ->group(function () {
         Route::get('find', 'find')->name('find');
+        Route::get('/{session}', 'show')->name('show');
     });
 
 Route::prefix('users')
@@ -74,6 +75,8 @@ Route::prefix('tickets')
     ->controller(TicketController::class)
     ->group(function () {
         Route::get('get-tickets-count-by-month', 'getTicketsCountByMonth')->name('get_tickets_count_by_month');
+        Route::middleware('auth:sanctum')->post('order', 'processOrder')->name('process-order');
+        Route::middleware('auth:sanctum')->get('/download', 'download')->name('download');
     });
 
 Route::prefix('cities')

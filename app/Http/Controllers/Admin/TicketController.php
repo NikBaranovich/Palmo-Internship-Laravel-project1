@@ -12,7 +12,12 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Facades\Pdf;
+use function Spatie\LaravelPdf\Support\pdf;
 
 class TicketController extends Controller
 {
@@ -27,15 +32,59 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
+        // $tickets = $this->ticket->query()
+        //     ->when($request->has('sort_by'), function (Builder $query) use ($request) {
+        //         $query->orderBy(
+        //             $request->input('sort_by'),
+        //             $request->input('sort_order', 'asc')
+        //         );
+        //     })
+        //     ->paginate(10);
         $tickets = $this->ticket->query()
-            ->when($request->has('sort_by'), function (Builder $query) use ($request) {
-                $query->orderBy(
-                    $request->input('sort_by'),
-                    $request->input('sort_order', 'asc')
-                );
-            })
+            ->with([
+                'seat.seatGroup.hall.entertainmentVenue',
+                'session.event',
+            ])
             ->paginate(10);
-        return view('admin.ticket.index', compact('tickets'));
+        $ticketsData = [];
+        foreach ($tickets as $ticket) {
+            $seat = $ticket->seat;
+            $hall = $seat->seatGroup->hall;
+
+            $entertainmentVenue = $hall->entertainmentVenue;
+            $seatGroup = $seat->seatGroup;
+
+            $session = $ticket->session;
+            $event = $session->event;
+            $qrCode = QrCode::color(57, 73, 171)->errorCorrection('H')->size(70)->generate($ticket->token);
+
+            $ticketsData[] = compact(
+                'ticket',
+                'seat',
+                'qrCode',
+                'event',
+                'entertainmentVenue',
+                'hall',
+                'session',
+                'seatGroup'
+            );
+        }
+        $filePath = 'tickets/';
+        $fileName = 'ticket.pdf';
+
+        $html = view('pdf.ticketPdf')->render();
+        Browsershot::url('https://example.com')->setIncludePath('$PATH:/usr/local/bin')->save('example.pdf');
+
+        // $pdf = FacadePdf::loadView('pdf.ticketPdf', $data);
+        // $file = Storage::disk('local')->put($filePath . $fileName, $pdf->output());
+        // $file = Storage::disk('local')->put($filePath . $fileName, $pdf);
+        $fullFileDir = Storage::path($filePath);
+        chmod($fullFileDir, 0777);
+
+        $fileUrl = $filePath . $fileName;
+        return view('pdf.ticketPdf', compact(
+            'ticketsData',
+        ));
     }
 
     /**
@@ -96,5 +145,4 @@ class TicketController extends Controller
     {
         //
     }
-
 }

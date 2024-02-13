@@ -51,7 +51,6 @@ class Hall extends Model
     }
     public function getEnabledItemsList()
     {
-
         $this->loadMissing('seatGroups.tables', 'seatGroups.seats');
 
         return $this->seatGroups->map(function ($group) {

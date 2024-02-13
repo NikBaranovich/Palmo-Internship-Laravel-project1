@@ -37,11 +37,8 @@ class HallController extends Controller
 
     public function getEnabledHallElements(Request $request)
     {
-
-
-
         $hallId = Session::query()
-            ->where('id', request()->query('session_id'))
+            ->where('id', $request->query('session_id'))
             ->value('hall_id');
 
         return EnabledHallItemCollection::collection(
