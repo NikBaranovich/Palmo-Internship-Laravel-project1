@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Event;
-use App\Models\EventGenre;
+use App\Models\Genre;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -50,13 +50,13 @@ class EventSeeder extends Seeder
                 $backdropData = file_get_contents($backdropUrl);
                 $backdropName = '/' . Str::uuid() . '.jpg';
 
-                Storage::put('events/backdrops' . $backdropName, $backdropData);
+                Storage::disk('public')->put('events/backdrops' . $backdropName, $backdropData);
 
                 $posterUrl = "https://image.tmdb.org/t/p/w1280{$event->poster_path}";
                 $posterData = file_get_contents($posterUrl);
                 $posterName = '/' . Str::uuid() . '.jpg';
 
-                Storage::put('events/posters' . $posterName, $posterData);
+                Storage::disk('public')->put('events/posters' . $posterName, $posterData);
 
                 $trailerUrl = $trailer ? "https://www.youtube.com/watch?v={$trailer->key}" : null;
                 $createdEvent = Event::factory()->create([
@@ -81,7 +81,7 @@ class EventSeeder extends Seeder
                 $genresArray = [];
                 foreach ($event->genre_ids as $genre) {
                     $genrePos = array_search($genre, array_column($genres, 'id'));
-                    $genreModel = EventGenre::where('name', $genres[$genrePos]->name)->first();
+                    $genreModel = Genre::where('name', $genres[$genrePos]->name)->first();
                     $genresArray[] = $genreModel->id;
                 }
                 $createdEvent->genres()->sync($genresArray);

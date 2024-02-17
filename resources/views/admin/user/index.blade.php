@@ -115,5 +115,8 @@
             @endforeach
         </tbody>
     </table>
-
+    {{ $users->appends([
+        'sort_by' => request('sort_by'),
+        'sort_order' => request('sort_order'),
+    ])->links() }}
 @endsection

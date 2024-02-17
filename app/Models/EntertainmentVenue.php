@@ -52,6 +52,13 @@ class EntertainmentVenue extends Model
             $query->where($query->qualifyColumn('city_id'), $city);
         });
     }
+    
+    public function scopeByCities(Builder $query, $cities)
+    {
+        $query->when($cities, function (Builder $query) use ($cities) {
+            $query->whereIn($query->qualifyColumn('city_id'), $cities);
+        });
+    }
     public function scopeByEvent(Builder $query, $event)
     {
         $query->when($event, function (Builder $query) use ($event) {

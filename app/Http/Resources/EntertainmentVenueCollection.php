@@ -21,13 +21,13 @@ class EntertainmentVenueCollection extends Resource
                     $query->when($request->query('event'), function (Builder $query) use ($request) {
                         $query->where('event_id', $request->input('event'));
                     })
-                    ->withMin('sessionSeatGroups', 'price')
-                    ->withMax('sessionSeatGroups', 'price');
+                        ->withMin('sessionSeatGroups', 'price')
+                        ->withMax('sessionSeatGroups', 'price')
+                        ->byStartDate($request->query('start_date'))
+                        ->orderBy('start_time');
                 }
             ])
-
             ->get(['id', 'number']);
-
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,

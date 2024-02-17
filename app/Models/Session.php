@@ -50,7 +50,7 @@ class Session extends Model
                     $startDate,
                     $endDate
                 ];
-                $query->whereDate($query->qualifyColumn('start_time'), $dateRange);
+                $query->whereDate('start_time', $dateRange);
             });
     }
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\EntertainmentVenueController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventGenreController;
+use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\HallController;
 use App\Http\Controllers\Api\SeatGroupController;
 use App\Http\Controllers\Api\SessionController;
@@ -51,7 +52,11 @@ Route::prefix('events')
     ->controller(EventController::class)
     ->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/search', 'search')->name('search');
         Route::get('/{event}', 'show')->name('show');
+        Route::middleware('auth:sanctum')->get('/{event}/user-vote', 'getUserRating')->name('user-vote');
+
+        Route::get('/{event}/increment', 'incrementViews')->name('increment');
         Route::middleware('auth:sanctum')->post('/{event}/rate', 'rateEvent')->name('rate');
     });
 
@@ -86,9 +91,9 @@ Route::prefix('cities')
         Route::get('/', 'index')->name('index');
     });
 
-Route::prefix('event-genres')
-    ->name('eventGenres.')
-    ->controller(EventGenreController::class)
+Route::prefix('genres')
+    ->name('genres.')
+    ->controller(GenreController::class)
     ->group(function () {
         Route::get('/', 'index')->name('index');
     });

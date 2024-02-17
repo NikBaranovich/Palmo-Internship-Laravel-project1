@@ -3,10 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\EventGenre;
+use App\Models\Genre;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class EventGenreSeeder extends Seeder
+class GenreSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -26,7 +27,7 @@ class EventGenreSeeder extends Seeder
         $genres = json_decode($response->getBody())->genres;
 
         foreach ($genres as $genre) {
-            EventGenre::factory()->create([
+            Genre::factory()->create([
                 'name' => $genre->name,
                 'event_type_id' => 1,
             ]);

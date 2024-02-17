@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateTicketRequest;
+use App\Mail\OrderProcessed;
 use App\Models\EntertainmentVenue;
 use App\Models\Event;
 use App\Models\Session;
@@ -12,6 +13,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -71,13 +73,9 @@ class TicketController extends Controller
         }
         $filePath = 'tickets/';
         $fileName = 'ticket.pdf';
+        
+        Mail::to('archosgp1975@gmail.com')->send(new OrderProcessed($ticketsData));
 
-        $html = view('pdf.ticketPdf')->render();
-        Browsershot::url('https://example.com')->setIncludePath('$PATH:/usr/local/bin')->save('example.pdf');
-
-        // $pdf = FacadePdf::loadView('pdf.ticketPdf', $data);
-        // $file = Storage::disk('local')->put($filePath . $fileName, $pdf->output());
-        // $file = Storage::disk('local')->put($filePath . $fileName, $pdf);
         $fullFileDir = Storage::path($filePath);
         chmod($fullFileDir, 0777);
 

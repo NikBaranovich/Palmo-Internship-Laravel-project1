@@ -38,7 +38,7 @@
             </div>
 
             <label for="user_role">User Role:</label>
-            <select name="role" id="role">
+            <select class="form-select" name="role" id="role">
                 @foreach (UserRole::cases() as $role)
                     <option value="{{ $role->value }}" {{ old('user_role') == $role->value ? 'selected' : '' }}>
                         {{ ucfirst($role->value) }}
@@ -58,7 +58,7 @@
                     @enderror
                 </div>
             @endif
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary mt-4">Save</button>
         </form>
     </div>
 @endsection

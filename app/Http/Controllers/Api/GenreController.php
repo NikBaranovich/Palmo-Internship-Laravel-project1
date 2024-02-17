@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\EventGenre;
+use App\Models\Genre;
 use Illuminate\Http\Request;
 
-class EventGenreController extends Controller
+class GenreController extends Controller
 {
     public function index(Request $request)
     {
-        return EventGenre::query()->get(['id', 'name']);
+        return Genre::query()->get(['id', 'name']);
     }
 }

@@ -10,21 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TicketGeneration implements ShouldBroadcast
+class EmailNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $url;
     private $user;
+    private $message;
     /**
      * Create a new event instance.
      */
-    public function __construct($url, $user)
+    public function __construct($message, $user)
     {
-        $this->url = $url;
+        $this->message = $message;
         $this->user = $user;
     }
-
     /**
      * Get the channels the event should broadcast on.
      *
@@ -33,12 +32,11 @@ class TicketGeneration implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('ticket-generation-' . $this->user->id),
+            new Channel('email-notification-' . $this->user->id),
         ];
     }
-
     public function broadcastWith(): array
     {
-        return ['url' => $this->url];
+        return ['message' => $this->message];
     }
 }

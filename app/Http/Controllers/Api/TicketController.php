@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\TicketGeneration;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessEmailTicketNotification;
 use App\Jobs\ProcessTicketGeneration;
 use App\Models\Seat;
 use App\Models\Session;
@@ -64,11 +65,12 @@ class TicketController extends Controller
                 'seat_id' => $ticket['id'],
             ]);
             $tickets[] = $dbTicket;
-            // $dbTicket->save();
+            $dbTicket->save();
         }
-
         //pdf generation
-        ProcessTicketGeneration::dispatch($tickets);
+        ProcessTicketGeneration::dispatch($tickets, $request->user());
+
+        ProcessEmailTicketNotification::dispatch($tickets, $request->user());
     }
 
     public function download(Request $request)

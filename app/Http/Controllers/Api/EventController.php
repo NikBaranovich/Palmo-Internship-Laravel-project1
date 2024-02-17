@@ -33,6 +33,9 @@ class EventController extends Controller
             })
             ->byGenres($request->query('genres'))
             ->topEventsByTickets($request->query('ticket_top'))
+            ->topEventsByViews($request->query('views_top'))
+            ->topEventsByRate($request->query('rate_top'))
+            ->topEventsByUser($request->query('user'))
             ->byTitle($request->query('title'));
 
         if ($request->query('limit')) {
@@ -50,9 +53,9 @@ class EventController extends Controller
 
     public function search(Request $request)
     {
-        return EventCollection::collection(Event::query()
+        return Event::query()
             ->where('title', 'LIKE', "%{$request->query('title')}%")
-            ->get());
+            ->get(['id', 'title']);
     }
 
     public function rateEvent(Request $request, string $event)
@@ -61,34 +64,23 @@ class EventController extends Controller
             'vote' => 'required|integer|min:1|max:5',
         ]);
 
-        $this->rating->firstOrNew(
-            ['user_id' =>  $request->user()->id, 'event_id' => $event],
-        );
+        $rating = Rating::where('user_id', $request->user()->id)->where('event_id', $event)->first();
+        if ($rating) {
+            $this->rating = $rating;
+        }
+        $this->rating->vote = $request->input('vote');
         $this->rating->user()->associate($request->user()->id);
         $this->rating->event()->associate($event);
-        $this->rating->fill($request->only($this->rating->getFillable()));
 
         $this->rating->save();
-        // if(!$ratingExists->get()->fir){
-        //     $this->rating->fill($request->only($this->rating->getFillable()));
-        //
-        //     $this->rating->save();
-        // }
-        // else{
-        //     $ratingExists
-        // }
 
-
-        // $rating = Rating::updateOrCreate(
-        //     ['user_id' => $request->user()->id, 'event_id' => $event->id],
-        //     ['vote' => $request->vote]
-        // );
-
-        return response()->json(['message' => 'Event rated successfully']);
+        return;
     }
-
-    public function filter(FilterRequest $request)
+    public function getUserRating(Request $request, string $event)
     {
+        $rating = Rating::where('user_id', $request->user()->id)->where('event_id', $event)->first();
+
+        return response()->json(['vote' => $rating?->vote ?: 0]);
     }
 
     public function getTop(Request $request)
@@ -97,5 +89,11 @@ class EventController extends Controller
             ->topEventsByTickets($request->query('ticket_top'))
             ->get()
             ->toArray();
+    }
+
+    public function incrementViews(Event $event)
+    {
+        $event->increment('views_count');
+        return response()->json([]);
     }
 }

@@ -21,7 +21,18 @@ class EntertainmentVenueController extends Controller
         return EntertainmentVenueCollection::collection(
             $this->entertainmentVenue
                 ->query()
-                ->byCity($request->query('city'))
+                ->byCities($request->query('cities'))
+                ->when($request->query('start_date'), function (Builder $query) use ($request) {
+                    $query->whereHas(
+                        'halls.sessions',
+                        function ($query) use ($request) {
+                            $query->when($request->query('event'), function (Builder $query) use ($request) {
+                                $query->where('event_id', $request->input('event'));
+                            })
+                                ->byStartDate($request->query('start_date'));
+                        }
+                    );
+                })
                 ->byEvent($request->query('event'))
                 ->get()
         );

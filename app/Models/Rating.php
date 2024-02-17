@@ -9,11 +9,7 @@ class Rating extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['event_id', 'user_id', 'vote'];
-
-    protected $primaryKey = ['event_id', 'user_id'];
-
-    public $incrementing = false;
+    protected $fillable = ['vote'];
 
     public function user()
     {

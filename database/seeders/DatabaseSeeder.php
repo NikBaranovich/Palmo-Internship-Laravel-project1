@@ -23,14 +23,14 @@ class DatabaseSeeder extends Seeder
             // AdminSeeder::class,
             // UserSeeder::class,
             // EventTypeSeeder::class,
-            // EventGenreSeeder::class,
+            // GenreSeeder::class,
             // EventSeeder::class,
             // CitySeeder::class,
             // VenueTypeSeeder::class,
             // EntertainmentVenueSeeder::class,
+            // RatingSeeder::class,
             SessionSeeder::class,
             TicketSeeder::class,
-            // RatingSeeder::class,
         ]);
     }
 }

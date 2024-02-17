@@ -2,24 +2,20 @@
 
 namespace App\Jobs;
 
-use Spatie\LaravelPdf\Facades\Pdf;
+use App\Events\EmailNotification;
 use App\Events\TicketGeneration;
 use App\Mail\OrderProcessed;
-use App\Models\Ticket;
-use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use PharIo\Manifest\Email;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Spatie\Browsershot\Browsershot;
 
-class ProcessTicketGeneration implements ShouldQueue
+class ProcessEmailTicketNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -37,7 +33,7 @@ class ProcessTicketGeneration implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle()
+    public function handle(): void
     {
         $ticketsData = [];
         foreach ($this->tickets as $ticket) {
@@ -49,10 +45,12 @@ class ProcessTicketGeneration implements ShouldQueue
 
             $session = $ticket->session;
             $event = $session->event;
+            $qrCode = QrCode::color(57, 73, 171)->errorCorrection('H')->size(70)->generate($ticket->token);
 
             $ticketsData[] = compact(
                 'ticket',
                 'seat',
+                'qrCode',
                 'event',
                 'entertainmentVenue',
                 'hall',
@@ -63,17 +61,8 @@ class ProcessTicketGeneration implements ShouldQueue
         $data = [
             'ticketsData' => $ticketsData,
         ];
-        $filePath = 'tickets/';
-        $fileName = 'tickets-103.pdf';
 
-        $pdf = FacadePdf::loadView('pdf.ticketPdf', $data);
-        $file = Storage::disk('local')->put($filePath . $fileName, $pdf->output());
-        $fullFileDir = Storage::path($filePath);
-        chmod($fullFileDir, 0777);
-
-        $fileUrl = $filePath . $fileName;
-
-        event(new TicketGeneration($fileUrl, $this->user));
-
+        Mail::to($this->user->email)->send(new OrderProcessed($ticketsData));
+        event(new EmailNotification('Tickets have been sent to your email', $this->user));
     }
 }
