@@ -52,8 +52,8 @@
                 </th>
 
                 <th><a class="table-header"
-                        href="{{ route('admin.entertainment-venues.index', ['sort_by' => 'venue_type_id', 'sort_order' => sortOrder('venue_type_id')]) }}">Type
-                        @if (request('sort_by') == 'venue_type_id')
+                        href="{{ route('admin.entertainment-venues.index', ['sort_by' => 'type', 'sort_order' => sortOrder('type')]) }}">Type
+                        @if (request('sort_by') == 'type')
                             @if (request('sort_order') == 'asc')
                                 <span class="material-symbols-rounded">arrow_upward_alt</span>
                             @else
@@ -66,8 +66,8 @@
                 </th>
 
                 <th><a class="table-header"
-                        href="{{ route('admin.entertainment-venues.index', ['sort_by' => 'city_id', 'sort_order' => sortOrder('city_id')]) }}">City
-                        @if (request('sort_by') == 'city_id')
+                        href="{{ route('admin.entertainment-venues.index', ['sort_by' => 'city', 'sort_order' => sortOrder('city')]) }}">City
+                        @if (request('sort_by') == 'city')
                             @if (request('sort_order') == 'asc')
                                 <span class="material-symbols-rounded">arrow_upward_alt</span>
                             @else

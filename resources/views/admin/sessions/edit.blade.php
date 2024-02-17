@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
         datalist {
             display: block !important;
@@ -44,6 +43,7 @@
             margin-right: 10px;
         }
     </style>
+
     <div class="container">
         <h2> {{ $session->exists ? 'Edit' : 'Add' }} Session</h2>
 
@@ -54,74 +54,74 @@
         @endif
 
 
-        <form method="post" enctype="multipart/form-data" id="session-form"
+        <form id="session-form" method="post" enctype="multipart/form-data"
             action="{{ $session->exists ? route('admin.sessions.update', $session->id) : route('admin.sessions.store') }}">
             @csrf
             @if ($session->exists)
                 @method('PUT')
             @endif
 
+
             <div class="form-group">
-                <label for="venue_id">Select venue</label>
+                <label for="venue">Select venue</label>
                 <fieldset class="position-relative">
-                    <input type="text" class="form-control" autocomplete="off" list="" id="venue" />
+                    <input type="text" value="{{ old('venue', $session->hall?->entertainmentVenue->name) }}"
+                        class="form-control" autocomplete="off" list="" name="venue" id="venue" />
                     <datalist class="visually-hidden" id="venue-options"> </datalist>
-                    </select>
+
                 </fieldset>
             </div>
 
-            <div class="form-group">
-                <label for="hall_id">Select hall</label>
-                <select id="hall_id" name="hall_id"> </select>
-            </div>
+            <div @class([
+                'hall-form-group',
+                'visually-hidden' => !old('hall_id', $session),
+            ])>
+                <div class="form-group">
+                    <label for="hall_id">Select hall</label>
+                    <select id="hall_id" name="hall_id" class="form-control">
 
-            <div class="col-md-9">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-7">
-                            <h3>Layout</h3>
-                            <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
-                                xmlns="http://www.w3.org/2000/svg" version="1.1"
-                                xmlns:xlink="http://www.w3.org/1999/xlink">
-                                <g stroke="#e8e8e8" stroke-width="1">
-                                    @for ($i = 0; $i <= 100; $i++)
-                                        <line x1="{{ $i * 5 }}" y1="0" x2="{{ $i * 5 }}"
-                                            y2="500" />
-                                    @endfor
+                    </select>
+                </div>
 
-                                    @for ($i = 0; $i <= 100; $i++)
-                                        <line x1="0" y1="{{ $i * 5 }}" x2="500"
-                                            y2="{{ $i * 5 }}" />
-                                    @endfor
-                                </g>
-                                <g id="places" width="100%" height="100%">
+                <div class="col-md-9 mt-4">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h3>Hall Layout</h3>
+                                <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
+                                    xmlns="http://www.w3.org/2000/svg" version="1.1"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink">
 
-                                </g>
-                            </svg>
-                        </div>
+                                    <g id="places" width="100%" height="100%">
 
-                        <div class="col-md-5">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6>Seat Groups</h6>
-                                    <div id="seat-groups">
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div class="col-md-5 mt-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>Seat Groups</h6>
+                                        <div id="seat-groups">
+                                        </div>
+                                        <select class="visually-hidden" id="groups" multiple name = "groups[]"> </select>
+
                                     </div>
-                                    <select class="visually-hidden" id="groups" multiple name = "groups[]"> </select>
-
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
-
             </div>
-
             <div class="form-group">
                 <label for="venue_id">Select event</label>
                 <fieldset class="position-relative">
-                    <input type="text" class="form-control" autocomplete="off" list="" id="event" />
+                    <input type="text" class="form-control" autocomplete="off" list="" name="event"
+                        id="event" value="{{ old('event', $session->event?->title) }}" />
+
                     <datalist class="visually-hidden" id="event-options"> </datalist>
-                    <input type="hidden" name="event_id" id="event_id" />
+                    <input type="hidden" name="event_id" id="event_id" value="{{ old('event', $session->event_id) }}" />
                 </fieldset>
             </div>
             <div class="form-group">
@@ -143,14 +143,11 @@
             </div>
 
             <button type="submit" class="btn btn-primary" onclick="saveForm">Save</button>
+
         </form>
     </div>
 
     <script>
-        const csrfToken = document.head.querySelector(
-            'meta[name="csrf-token"]'
-        ).content;
-
         const venueInput = document.getElementById("venue");
         const eventIdInput = document.getElementById("event_id");
 
@@ -186,46 +183,141 @@
 
         let halls = [];
 
-        function fetchHalls(searchHall) {
-            if (!searchHall) {
+        document.addEventListener("DOMContentLoaded", () => {
+            @if ($session->hall?->entertainment_venue_id)
+                fetchHalls({{ $session->hall->entertainment_venue_id }}, function(response) {
+                    var hallsArray = Object.keys(response).map(function(key) {
+                        return response[key];
+                    });
+                    halls = hallsArray;
+                    if (!hallsArray.length) {
+                        hideElement(document.querySelector('.hall-form-group'));
+                        return;
+                    }
+                    showElement(document.querySelector('.hall-form-group'));
+                    hallId = {{ $session->hall_id }};
+                    hallInput.innerHTML = hallsArray.reduce(
+                        (layout, hall) =>
+                        (layout +=
+                            `<option value='${hall.id}' ${hall.id == {{ $session->hall_id }} ? 'selected' : ''}>Hall ${hall.number}</option>`
+                        ),
+                        ``
+                    );
+
+                    console.log("object");
+                    fetchHallItems(hallId, function(hallItems) {
+
+                        @foreach ($session->sessionSeatGroups as $sessionSeatGroup)
+                            seatGroupsContainer.innerHTML += `
+                                <div class="seat-group">
+                                <div class="color-circle" style="background-color: {{ $sessionSeatGroup->seatGroup->color }};"></div>
+                                <div class="group-name">{{ $sessionSeatGroup->seatGroup->name }} {{ $sessionSeatGroup->seatGroup->number }}</div>
+                                <input type="number" value="{{ $sessionSeatGroup->price }}" class="group-price" id = "{{ $sessionSeatGroup->seatGroup->id }}" placeholder="Enter price" />
+                                </div>
+                                `
+                        @endforeach
+
+                        displayLayout(hallItems.layout, hallItems.elements);
+                    });
+                })
+            @endif
+
+            @if (old('hall_id'))
+                fetchVenues('{{ old('venue') }}', function(venues) {
+                    console.log("object");
+                    const venuesArray = Object.keys(venues).map(function(key) {
+                        if (venues[key].name === venueInput.value) {
+                            fetchHalls(venues[key].id, function(response) {
+                                var hallsArray = Object.keys(response).map(function(key) {
+                                    return response[key];
+                                });
+                                halls = hallsArray;
+                                if (!hallsArray.length) {
+                                    hideElement(document.querySelector('.hall-form-group'));
+                                    return;
+                                }
+                                showElement(document.querySelector('.hall-form-group'));
+                                hallId = {{ old('hall_id') }};
+
+                                hallInput.innerHTML = hallsArray.reduce(
+                                    (layout, hall) =>
+                                    (layout +=
+                                        `<option value='${hall.id}' ${hall.id == hallId ? 'selected' : ''}>Hall ${hall.number}</option>`
+                                    ),
+                                    ``
+                                );
+                                fetchHallItems(hallId, function(hallItems) {
+                                    seatGroupsContainer.innerHTML = hallItems
+                                        .seat_groups.reduce((layout, group) => {
+
+                                            let oldValue = '';
+                                            @if (old('groups'))
+                                                let groups =
+                                                    @json(old('groups'));
+
+                                                let foundGroup = groups.find(
+                                                    item => JSON.parse(item)
+                                                    .seat_group_id ==
+                                                    group.id);
+
+                                                if (foundGroup) {
+                                                    oldValue = JSON.parse(foundGroup).price;
+                                                }
+                                            @endif
+
+                                            layout += `
+                                                    <div class="seat-group">
+                                                        <div class="color-circle" style="background-color: ${group.color};"></div>
+                                                        <div class="group-name">${group.name} ${group.number}</div>
+                                                        <input type="number" class="group-price" id="${group.id}" placeholder="Enter price" value="${oldValue}" />
+                                                    </div>`;
+                                            return layout;
+                                        }, '');
+                                    displayLayout(hallItems.layout, hallItems
+                                        .elements);
+                                });
+
+                            });
+                        } else {
+                            hallInput.innerHTML = "";
+                        }
+                        return venues[key];
+                    });
+                    datalistVenues.innerHTML = venuesArray.reduce(
+                        (layout, venue) =>
+                        (layout += `<option value="${venue.id}">${venue.name} </option>`),
+                        ``
+                    );
+                })
+            @endif
+        });
+
+        function fetchHalls(venueId, success) {
+            if (!venueId) {
                 return;
             }
             $.ajax({
                 type: 'GET',
                 url: "{{ route('api.halls.search') }}",
                 data: {
-                    venueId: searchHall
+                    venueId
                 },
-                success: function(response) {
-                    var hallsArray = Object.keys(response).map(function(key) {
-                        return response[key];
-                    });
-                    halls = hallsArray;
-
-                    hallId = hallsArray[0].id;
-                    fetchHallItems(hallId);
-
-                    hallInput.innerHTML = hallsArray.reduce(
-                        (layout, hall) =>
-                        (layout += `<option value='${hall.id}'>${hall.number} Hall</option>`),
-                        ``
-                    );
-                },
+                success,
                 error: function(response) {
                     console.error(response);
                 }
             });
         }
 
-        function fetchEvents(name) {
-            if (!name) {
+        function fetchEvents(title) {
+            if (!title) {
                 return;
             }
             $.ajax({
                 type: 'GET',
                 url: "{{ route('api.events.search') }}",
                 data: {
-                    name
+                    title
                 },
                 success: function(events) {
                     var eventsArray = Object.keys(events).map(function(key) {
@@ -244,7 +336,7 @@
             });
         }
 
-        function fetchHallItems(hallId) {
+        function fetchHallItems(hallId, success) {
             if (!hallId) {
                 return;
             }
@@ -254,21 +346,7 @@
                 data: {
                     hall_id: hallId
                 },
-                success: function(hallItems) {
-
-                    seatGroupsContainer.innerHTML = hallItems.seat_groups.reduce(
-                        (layout, group) =>
-                        (layout += `
-                        <div class="seat-group">
-                        <div class="color-circle" style="background-color: ${group.color};"></div>
-                        <div class="group-name">${group.name} ${group.number}</div>
-                        <input type="number" class = "group-price" id = "${group.id}" placeholder="Enter price" />
-                        </div>
-                        `),
-                        ''
-                    );
-                    displayLayout(hallItems.layout, hallItems.elements);
-                },
+                success,
                 error: function(response) {
                     console.error(response);
                 }
@@ -285,7 +363,57 @@
             };
         }
         venueInput.oninput = debounce(() => {
-            fetchVenues(venueInput.value, datalistVenues)
+            hideElement(document.querySelector('.hall-form-group'));
+            fetchVenues(venueInput.value, function(venues) {
+
+                const venuesArray = Object.keys(venues).map(function(key) {
+                    if (venues[key].name === venueInput.value) {
+                        fetchHalls(venues[key].id, function(response) {
+                            var hallsArray = Object.keys(response).map(function(key) {
+                                return response[key];
+                            });
+                            halls = hallsArray;
+                            if (!hallsArray.length) {
+                                hideElement(document.querySelector('.hall-form-group'));
+                                return;
+                            }
+                            showElement(document.querySelector('.hall-form-group'));
+                            hallId = hallsArray[0].id;
+                            fetchHallItems(hallId, function(hallItems) {
+
+                                seatGroupsContainer.innerHTML = hallItems
+                                    .seat_groups.reduce(
+                                        (layout, group) =>
+                                        (layout += `
+    <div class="seat-group">
+    <div class="color-circle" style="background-color: ${group.color};"></div>
+    <div class="group-name">${group.name} ${group.number}</div>
+    <input type="number" class = "group-price" id = "${group.id}" placeholder="Enter price" />
+    </div>
+    `),
+                                        ''
+                                    );
+                                displayLayout(hallItems.layout, hallItems.elements);
+                            });
+                            hallInput.innerHTML = hallsArray.reduce(
+                                (layout, hall) =>
+                                (layout +=
+                                    `<option value='${hall.id}'>Hall ${hall.number}</option>`
+                                ),
+                                ``
+                            );
+                        });
+                    } else {
+                        hallInput.innerHTML = "";
+                    }
+                    return venues[key];
+                });
+                datalistVenues.innerHTML = venuesArray.reduce(
+                    (layout, venue) =>
+                    (layout += `<option value="${venue.id}">${venue.name} </option>`),
+                    ``
+                );
+            })
         });
 
         eventInput.oninput = debounce(() => {
@@ -326,7 +454,38 @@
 
             if (target.tagName === "OPTION") {
                 venueInput.value = target.text;
-                fetchHalls(target.value);
+                fetchHalls(target.value, function(response) {
+                    var hallsArray = Object.keys(response).map(function(key) {
+                        return response[key];
+                    });
+                    halls = hallsArray;
+                    if (!hallsArray.length) {
+                        hideElement(document.querySelector('.hall-form-group'));
+                        return;
+                    }
+                    showElement(document.querySelector('.hall-form-group'));
+                    hallId = hallsArray[0].id;
+                    fetchHallItems(hallId, function(hallItems) {
+
+                        seatGroupsContainer.innerHTML = hallItems.seat_groups.reduce(
+                            (layout, group) =>
+                            (layout += `
+    <div class="seat-group">
+    <div class="color-circle" style="background-color: ${group.color};"></div>
+    <div class="group-name">${group.name} ${group.number}</div>
+    <input type="number" class = "group-price" id = "${group.id}" placeholder="Enter price" />
+    </div>
+    `),
+                            ''
+                        );
+                        displayLayout(hallItems.layout, hallItems.elements);
+                    });
+                    hallInput.innerHTML = hallsArray.reduce(
+                        (layout, hall) =>
+                        (layout += `<option value='${hall.id}'>Hall ${hall.number}</option>`),
+                        ``
+                    );
+                });
             }
             hideElement(datalistVenues);
         }
@@ -348,7 +507,21 @@
         function handleHallInputClick(event) {
             hallId = hallInput.value;
 
-            fetchHallItems(hallId);
+            fetchHallItems(hallId, function(hallItems) {
+
+                seatGroupsContainer.innerHTML = hallItems.seat_groups.reduce(
+                    (layout, group) =>
+                    (layout += `
+    <div class="seat-group">
+    <div class="color-circle" style="background-color: ${group.color};"></div>
+    <div class="group-name">${group.name} ${group.number}</div>
+    <input type="number" class = "group-price" id = "${group.id}" placeholder="Enter price" />
+    </div>
+    `),
+                    ''
+                );
+                displayLayout(hallItems.layout, hallItems.elements);
+            });
 
             hideElement(datalistVenues);
         }

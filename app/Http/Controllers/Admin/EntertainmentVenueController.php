@@ -23,16 +23,27 @@ class EntertainmentVenueController extends Controller
      */
     public function index(Request $request)
     {
-        $sortableColumns = ['id', 'name', 'venue_type_id', 'city_id', 'address'];
+        $sortableColumns = ['id', 'name', 'type', 'city', 'address'];
 
         $venues = $this->venue->query()
             ->when(
                 $request->has('sort_by') && in_array($request->input('sort_by'), $sortableColumns),
                 function (Builder $query) use ($request) {
-                    $query->orderBy(
-                        $request->input('sort_by'),
-                        $request->input('sort_order', 'asc')
-                    );
+                    $sortBy = $request->input('sort_by');
+                    $sortOrder = $request->input('sort_order', 'asc');
+
+                    switch ($sortBy) {
+                        case 'city':
+                            $query->withAggregate('city', 'name')
+                                ->orderBy('city_name', $sortOrder);
+                            break;
+                        case 'type':
+                            $query->withAggregate('venueType', 'name')
+                                ->orderBy('venue_type_name', $sortOrder);
+                            break;
+                        default:
+                            $query->orderBy($sortBy, $sortOrder);
+                    }
                 }
             )
             ->paginate(10);

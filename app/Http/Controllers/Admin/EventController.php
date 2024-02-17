@@ -26,19 +26,27 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $sortableColumns = ['id', 'title', 'event_type_id', 'release_date'];
+        $sortableColumns = ['id', 'title', 'type', 'release_date'];
 
         $events = $this->event->query()
             ->when(
                 $request->has('sort_by') && in_array($request->input('sort_by'), $sortableColumns),
                 function (Builder $query) use ($request) {
-                    $query->orderBy(
-                        $request->input('sort_by'),
-                        $request->input('sort_order', 'asc')
-                    );
+                    $sortBy = $request->input('sort_by');
+                    $sortOrder = $request->input('sort_order', 'asc');
+
+                    switch ($sortBy) {
+                        case 'type':
+                            $query->withAggregate('eventType', 'name')
+                                ->orderBy('event_type_name', $sortOrder);
+                            break;
+                        default:
+                            $query->orderBy($sortBy, $sortOrder);
+                    }
                 }
             )
             ->paginate(10);
+
         return view('admin.events.index', compact('events'));
     }
 
@@ -97,40 +105,46 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
-        // Проверяем, загружены ли новые постеры и/или фоны
         if ($request->hasFile('poster')) {
-            // Удаляем старый постер, если он существует
             if ($event->poster_path) {
                 Storage::disk('public')->delete($event->poster_path);
             }
-            // Загружаем новый постер
             $imagePath = $request->file('poster')->store('events/posters', 'public');
             $request['poster_path'] = $imagePath;
         }
 
         if ($request->hasFile('backdrop')) {
-            // Удаляем старый фон, если он существует
             if ($event->backdrop_path) {
                 Storage::disk('public')->delete($event->backdrop_path);
             }
-            // Загружаем новый фон
             $imagePath = $request->file('backdrop')->store('events/backdrops', 'public');
             $request['backdrop_path'] = $imagePath;
         }
 
-        // Обновляем модель события
         $event->fill($request->except('_token'));
         $event->save();
         $event->genres()->sync($request->input('genres'));
 
         return redirect()->route('admin.events.index')->with('success', 'Event updated successfully');
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Event $event)
     {
-        dd($id);
+        if ($event->poster_path) {
+            Storage::disk('public')->delete($event->poster_path);
+        }
+
+        if ($event->backdrop_path) {
+            Storage::disk('public')->delete($event->backdrop_path);
+        }
+
+        $event->delete();
+
+        return redirect()
+            ->route('admin.events.index')
+            ->with('success', 'Event successfully deleted.');
     }
 }

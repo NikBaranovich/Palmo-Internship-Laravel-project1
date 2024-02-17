@@ -1,6 +1,6 @@
 import 'bootstrap';
 
-const fetchVenues = (searchVenue, datalistVenues) => {
+const fetchVenues = (searchVenue, success) => {
     if (!searchVenue) {
         return;
     }
@@ -10,22 +10,7 @@ const fetchVenues = (searchVenue, datalistVenues) => {
         data: {
             name: searchVenue
         },
-        success: function(venues) {
-
-            const venuesArray = Object.keys(venues).map(function(key) {
-                if (venues[key].name === searchVenue) {
-                    fetchHalls(venues[key].id);
-                } else {
-                    hallInput.innerHTML = "";
-                }
-                return venues[key];
-            });
-            datalistVenues.innerHTML = venuesArray.reduce(
-                (layout, venue) =>
-                (layout += `<option value="${venue.id}">${venue.name} </option>`),
-                ``
-            );
-        },
+        success,
         error: function(response) {
             console.error(response);
         }

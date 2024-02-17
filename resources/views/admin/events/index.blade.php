@@ -53,9 +53,9 @@
                 </th>
 
                 <th><a class="table-header"
-                        href="{{ route('admin.events.index', ['sort_by' => 'event_type_id', 'sort_order' => sortOrder('event_type_id')]) }}">
+                        href="{{ route('admin.events.index', ['sort_by' => 'type', 'sort_order' => sortOrder('type')]) }}">
                         Type
-                        @if (request('sort_by') == 'event_type_id')
+                        @if (request('sort_by') == 'type')
                             @if (request('sort_order') == 'asc')
                                 <span class="material-symbols-rounded">arrow_upward_alt</span>
                             @else
