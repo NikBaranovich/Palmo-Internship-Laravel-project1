@@ -17,7 +17,7 @@
             </a>
         </li>
         <li class="sidebar-list-item">
-            <a href="{{ route('admin.entertainment_venues.index') }}">
+            <a href="{{ route('admin.entertainment-venues.index') }}">
                 <span class="material-icons-outlined">account_balance</span> Entertainment Venues
             </a>
         </li>

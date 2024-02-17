@@ -29,15 +29,15 @@ use App\Http\Controllers\ImageController;
 
 
 
-Route::controller(HomeController::class)
-    ->group(function () {
-        Route::get('/', 'index')->name('home');
-    });
+// Route::controller(HomeController::class)
+//     ->group(function () {
+//         Route::get('/', 'index')->name('home');
+//     });
 
 Route::prefix('admin/')->name('admin.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::resource('users', UserController::class)->names('users');
-    Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment_venues');
+    Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment-venues');
 
 
     // Route::resource('halls', HallController::class)->except(['create', 'edit'])->names('halls');

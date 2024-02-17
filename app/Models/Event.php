@@ -14,6 +14,7 @@ class Event extends Model
         'title',
         'overview',
         'trailer_url',
+        'event_type_id',
         'poster_path',
         'backdrop_path',
         'release_date'
@@ -38,7 +39,10 @@ class Event extends Model
     {
         return $this->hasMany(Rating::class);
     }
-
+    public function eventType()
+    {
+        return $this->belongsTo(EventType::class);
+    }
     public function scopeTopEventsByTickets($query, $ticket_top)
     {
         $query->when($ticket_top, function (Builder $query) {

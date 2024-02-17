@@ -29,7 +29,7 @@ class UserController extends Controller
     {
         $users = $this->service->index($request);
 
-        return view('admin.user.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -37,7 +37,7 @@ class UserController extends Controller
      */
     public function create(User $user)
     {
-        return view('admin.user.edit', compact('user'));
+        return view('admin.users.edit', compact('user'));
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
 
-        return view('admin.user.edit', compact('user'));
+        return view('admin.users.edit', compact('user'));
     }
 
     /**

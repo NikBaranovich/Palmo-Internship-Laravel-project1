@@ -86,7 +86,7 @@ class HallController extends Controller
         $hall->update(['layout' => json_encode($layout)]);
 
         return redirect()
-            ->route('admin.entertainment_venues.index')
+            ->route('admin.entertainment-venues.index')
             ->with('success', 'Hall successfully created.');
     }
 

@@ -19,7 +19,7 @@ class RatingFactory extends Factory
     public function definition(): array
     {
         return [
-            'vote' => $this->faker->randomDigit,
+            'vote' => $this->faker->numberBetween(1, 5),
             'event_id' => Event::get()->random()->id,
             'user_id' => User::get()->random()->id,
         ];

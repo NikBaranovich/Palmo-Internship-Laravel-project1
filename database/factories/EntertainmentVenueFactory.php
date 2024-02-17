@@ -21,7 +21,7 @@ class EntertainmentVenueFactory extends Factory
         return [
             'name' => $this->faker->company,
             'city_id' => City::get()->random()->id,
-            'address' => $this->faker->sentence,
+            'address' => $this->faker->address,
             'description' => $this->faker->paragraph,
             'venue_type_id' => VenueType::get()->random()->id,
         ];

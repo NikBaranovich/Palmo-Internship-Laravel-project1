@@ -40,7 +40,8 @@
             <label for="user_role">User Role:</label>
             <select class="form-select" name="role" id="role">
                 @foreach (UserRole::cases() as $role)
-                    <option value="{{ $role->value }}" {{ old('user_role') == $role->value ? 'selected' : '' }}>
+                <option value="{{ $role->value }}" {{ old('user_role', $user->role) == $role->value ? 'selected' : '' }}>
+
                         {{ ucfirst($role->value) }}
                     </option>
                 @endforeach

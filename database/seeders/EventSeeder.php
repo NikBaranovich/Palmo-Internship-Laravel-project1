@@ -48,15 +48,15 @@ class EventSeeder extends Seeder
 
                 $backdropUrl = "https://image.tmdb.org/t/p/w1280{$event->backdrop_path}";
                 $backdropData = file_get_contents($backdropUrl);
-                $backdropName = '/' . Str::uuid() . '.jpg';
+                $backdropName = 'events/backdrops/' . Str::uuid() . '.jpg';
 
-                Storage::disk('public')->put('events/backdrops' . $backdropName, $backdropData);
+                Storage::disk('public')->put($backdropName, $backdropData);
 
                 $posterUrl = "https://image.tmdb.org/t/p/w1280{$event->poster_path}";
                 $posterData = file_get_contents($posterUrl);
-                $posterName = '/' . Str::uuid() . '.jpg';
+                $posterName = 'events/posters/' . Str::uuid() . '.jpg';
 
-                Storage::disk('public')->put('events/posters' . $posterName, $posterData);
+                Storage::disk('public')->put($posterName, $posterData);
 
                 $trailerUrl = $trailer ? "https://www.youtube.com/watch?v={$trailer->key}" : null;
                 $createdEvent = Event::factory()->create([
@@ -87,5 +87,6 @@ class EventSeeder extends Seeder
                 $createdEvent->genres()->sync($genresArray);
             }
         }
+        chmod(storage_path('app/public/events'), 0777);
     }
 }

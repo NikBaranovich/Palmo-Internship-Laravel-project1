@@ -9,7 +9,7 @@
         </div>
 
         <div>
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-circle btn-xl">
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-circle btn-xl add-button">
                 <span class="material-icons-outlined">add</span>
             </a>
         </div>
@@ -100,12 +100,9 @@
                                 <li><a class="dropdown-item text-warning"
                                         href="{{ route('admin.users.edit', ['user' => $user->id]) }}">edit</a></li>
                                 <li>
-                                    <form class="d-inline" action="{{ route('admin.users.destroy', $user->id) }}"
-                                        method="post" id="deleteForm">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="dropdown-item text-danger">delete</button>
-                                    </form>
+                                    <button onclick="handleDeleteClick({{ $user->id }})"
+                                        class="dropdown-item text-danger" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal">delete</button>
                                 </li>
                             </ul>
                         </div>
@@ -116,7 +113,38 @@
         </tbody>
     </table>
     {{ $users->appends([
-        'sort_by' => request('sort_by'),
-        'sort_order' => request('sort_order'),
-    ])->links() }}
+            'sort_by' => request('sort_by'),
+            'sort_order' => request('sort_order'),
+        ])->links() }}
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form class="d-inline" action="" method="post" id="deleteForm">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleDeleteClick(id) {
+            document.getElementById('deleteModal').dataset.id = id;
+            var form = deleteModal.querySelector('form');
+            form.action = '{{ route('admin.users.destroy', ':id') }}'.replace(':id', id);
+
+        }
+    </script>
 @endsection

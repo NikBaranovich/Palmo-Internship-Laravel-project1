@@ -20,17 +20,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // AdminSeeder::class,
-            // UserSeeder::class,
-            // EventTypeSeeder::class,
-            // GenreSeeder::class,
-            // EventSeeder::class,
-            // CitySeeder::class,
-            // VenueTypeSeeder::class,
-            // EntertainmentVenueSeeder::class,
-            // RatingSeeder::class,
-            SessionSeeder::class,
-            TicketSeeder::class,
+            AdminSeeder::class,
+            UserSeeder::class,
+            EventTypeSeeder::class,
+            GenreSeeder::class,
+            EventSeeder::class,
+            CitySeeder::class,
+            VenueTypeSeeder::class,
+            EntertainmentVenueSeeder::class,
+            RatingSeeder::class,
+            // SessionSeeder::class,
+            // TicketSeeder::class,
         ]);
     }
 }

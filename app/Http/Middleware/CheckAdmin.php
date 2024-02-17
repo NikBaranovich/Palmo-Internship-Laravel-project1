@@ -23,6 +23,6 @@ class CheckAdmin
             }
         }
 
-        return redirect('/');
+        return abort(401);
     }
 }
