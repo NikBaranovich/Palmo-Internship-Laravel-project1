@@ -204,7 +204,6 @@
                         ``
                     );
 
-                    console.log("object");
                     fetchHallItems(hallId, function(hallItems) {
 
                         @foreach ($session->sessionSeatGroups as $sessionSeatGroup)

@@ -72,4 +72,9 @@ class Session extends Model
             });
         });
     }
+
+    public function getEntertainmentVenueNameAttribute()
+    {
+        return $this->hall->entertainmentVenue->name;
+    }
 }

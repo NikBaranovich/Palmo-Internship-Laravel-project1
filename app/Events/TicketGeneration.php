@@ -33,12 +33,17 @@ class TicketGeneration implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('ticket-generation-' . $this->user->id),
+            new PrivateChannel('user-' . $this->user->id),
         ];
     }
 
     public function broadcastWith(): array
     {
         return ['url' => $this->url];
+    }
+
+    public function broadcastAs()
+    {
+        return 'ticket-generation';
     }
 }

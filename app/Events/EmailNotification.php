@@ -32,11 +32,16 @@ class EmailNotification implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('email-notification-' . $this->user->id),
+            new PrivateChannel('user-' . $this->user->id),
         ];
     }
     public function broadcastWith(): array
     {
         return ['message' => $this->message];
+    }
+
+    public function broadcastAs()
+    {
+        return 'email-notification';
     }
 }

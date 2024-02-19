@@ -27,20 +27,14 @@ use App\Http\Controllers\ImageController;
 |
 */
 
-
-
-// Route::controller(HomeController::class)
-//     ->group(function () {
-//         Route::get('/', 'index')->name('home');
-//     });
+Route::get('/googleauth', [LoginController::class, 'redirectGoogle'])->name('redirect-google');
+Route::get('/googleauth/callback', [LoginController::class, 'callbackGoogle'])->name('callback-google');
 
 Route::prefix('admin/')->name('admin.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::resource('users', UserController::class)->names('users');
     Route::resource('entertainment-venues', EntertainmentVenueController::class)->names('entertainment-venues');
 
-
-    // Route::resource('halls', HallController::class)->except(['create', 'edit'])->names('halls');
     Route::prefix('entertainment-venues/{entertainmentVenue}/halls/')
         ->name('halls.')
         ->controller(HallController::class)
@@ -48,7 +42,9 @@ Route::prefix('admin/')->name('admin.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
-            Route::get('edit', 'edit')->name('edit');
+            Route::put('/{hall}', 'update')->name('update');
+            Route::get('/{hall}/edit', 'edit')->name('edit');
+            Route::post('/{hall}', 'destroy')->name('destroy');
         });
     Route::resource('events', EventController::class)->names('events');
     Route::resource('sessions', SessionController::class)->names('sessions');

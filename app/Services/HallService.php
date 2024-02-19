@@ -25,7 +25,7 @@ class HallService extends BaseService
 
     public function index(Request $request)
     {
-        return $this->repository->index($request->entertainmentVenue);
+        return $this->repository->index($request, $request->entertainmentVenue);
     }
 
     public function save($request, Hall $hall)
