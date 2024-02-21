@@ -21,7 +21,7 @@ class SessionFactory extends Factory
     public function definition(): array
     {
         $startDate = Carbon::now();
-        $endDate = $startDate->copy()->addDays(14);
+        $endDate = $startDate->copy()->addDays(7);
 
         $startTime = $this->faker->dateTimeBetween($startDate, $endDate);
 

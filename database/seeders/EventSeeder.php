@@ -18,7 +18,7 @@ class EventSeeder extends Seeder
     {
         // Event::factory(2)->create();
 
-        for ($i = 1; $i < 5; $i++) {
+        for ($i = 1; $i < 2; $i++) {
             $client = new \GuzzleHttp\Client();
 
             $response = $client->request('GET', config('endpoints.themoviedb.base_url') . "discover/movie?include_adult=false&include_video=false&language=en-US&page={$i}&sort_by=popularity.desc", [

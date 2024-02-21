@@ -79,6 +79,8 @@ body {
     color: #9799ab;
     overflow-y: auto;
     transition: all 0.5s;
+    display: flex;
+    flex-direction: column;
     -webkit-transition: all 0.5s;
   }
 
@@ -130,6 +132,24 @@ body {
     */
     z-index: 12 !important;
   }
+
+  .sidebar-bottom {
+    background-color: #21232d;
+    padding: 20px 10px;
+    bottom: 0px;
+    border-top: 1px solid #9799ab;
+    width: 100%;
+    position: sticky;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 0;
+    margin-top: auto;
+}
+.current-user {
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
 
 
   /* ---------- MAIN ---------- */

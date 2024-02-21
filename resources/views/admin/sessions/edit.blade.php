@@ -16,6 +16,33 @@
             z-index: 999;
         }
 
+        .scene {
+            color: white;
+            font: 18px serif;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            background-color: rgb(149, 104, 32);
+        }
+
+        .seat-number {
+            color: white;
+            font: 18px serif;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            background-color: rgb(98, 171, 98);
+            border-radius: 5px;
+        }
+
         option {
             padding: 4px;
             margin-bottom: 1px;
@@ -260,7 +287,8 @@
                                                     group.id);
 
                                                 if (foundGroup) {
-                                                    oldValue = JSON.parse(foundGroup).price;
+                                                    oldValue = JSON.parse(
+                                                        foundGroup).price;
                                                 }
                                             @endif
 
@@ -565,15 +593,39 @@
                         return element.id == layoutElement.id && element.type == 'seat';
                     })
 
-                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
                     rect.setAttribute("class", "element");
                     rect.setAttribute("width", layoutElement.width);
                     rect.setAttribute("height", layoutElement.height);
                     rect.setAttribute("x", layoutElement.x);
                     rect.setAttribute("y", layoutElement.y);
                     rect.setAttribute("data-element-type", "seat");
-                    rect.setAttribute("style", `fill: ${element.color};`);
+                    var div = document.createElement('div');
+                    div.innerHTML = `<div class="seat-number" style="background-color: ${element.color}">
+        ${element.number}</div>`;
+                    rect.appendChild(div);
                     svgContainer.appendChild(rect);
+
+                }
+
+                if (layoutElement.type === 'scene') {
+
+                    element = elements.find((element) => {
+                        return element.id == layoutElement.id && element.type == 'seat';
+                    })
+
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+                    rect.setAttribute("class", "element");
+                    rect.setAttribute("width", layoutElement.width);
+                    rect.setAttribute("height", layoutElement.height);
+                    rect.setAttribute("x", layoutElement.x);
+                    rect.setAttribute("y", layoutElement.y);
+                    rect.setAttribute("data-element-type", "scene");
+                    var div = document.createElement('div');
+                    div.innerHTML = `<div class="scene">Scene</div>`;
+                    rect.appendChild(div);
+                    svgContainer.appendChild(rect);
+
                 }
             });
         }

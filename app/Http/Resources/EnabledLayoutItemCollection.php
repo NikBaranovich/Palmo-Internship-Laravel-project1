@@ -18,9 +18,17 @@ class EnabledLayoutItemCollection extends Resource
     public function toArray(Request $request): array
     {
         $layout = json_decode($this->resource->seatGroup->hall->layout);
-        $elementPos = array_search($this->resource->id, array_column($layout, 'id'));
-        if ($elementPos !== false) {
-            $element = $layout[$elementPos];
+        $foundElement = null;
+        foreach ($layout as $element) {
+            if ($element->type == strtolower(class_basename($this->resource)) && $element->id == $this->resource->id) {
+                $foundElement = $element;
+                break;
+            }
+        }
+        if (isset($foundElement)) {
+            $element = $foundElement;
+        } else {
+            return [];
         }
         $this->resource->loadMissing('seatGroup');
 

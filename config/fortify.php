@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/home',
+    'home' => '/admin/dashboard',
 
     /*
     |--------------------------------------------------------------------------
@@ -154,6 +154,10 @@ return [
             'confirmPassword' => true,
             // 'window' => 0,
         ]),
+    ],
+
+    'redirects' => [
+        'logout' => 'login',
     ],
 
 ];

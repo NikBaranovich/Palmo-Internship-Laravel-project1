@@ -11,15 +11,18 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use GuzzleHttp\Promise\Create;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
 {
     public function __construct(
         protected UserService $service
     ) {
-        $this->middleware('admin');
+        // $this->middleware('admin');
     }
 
     /**
@@ -27,6 +30,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
         $users = $this->service->index($request);
 
         return view('admin.users.index', compact('users'));
@@ -45,6 +49,8 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request, User $user)
     {
+        $this->authorize('store', [User::class, $request->input('role')]);
+
         $this->service->save($request, $user);
 
         return redirect()
@@ -65,6 +71,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('edit', [User::class, $user]);
+
         $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
 
         return view('admin.users.edit', compact('user'));
@@ -75,6 +83,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', [User::class, $user, $request->input('role')]);
+
         $this->service->save($request, $user);
 
         return redirect()
@@ -87,6 +97,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('delete', [User::class, $user]);
+
         $this->service->delete($user);
 
         return redirect()

@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Storage::deleteDirectory('events/');
+        Storage::disk('public')->deleteDirectory('events/');
         Schema::dropIfExists('events');
     }
 };

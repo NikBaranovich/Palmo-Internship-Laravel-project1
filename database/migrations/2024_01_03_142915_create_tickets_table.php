@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('token');
             $table->foreignId('session_id')->constrained('sessions')->cascadeOnDelete();
-            $table->foreignId('seat_id')->constrained('seats')->cascadeOnDelete();
+            $table->foreignId('seat_id')->constrained('seats');
             $table->decimal('price');
             $table->timestamps();
         });

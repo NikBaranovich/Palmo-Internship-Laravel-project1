@@ -10,6 +10,7 @@ use App\Models\Seat;
 use App\Models\SeatGroup;
 use App\Models\Table;
 use App\Services\HallService;
+use Exception;
 use Illuminate\Http\Request;
 
 class HallController extends Controller
@@ -45,34 +46,28 @@ class HallController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(UpdateHallRequest $request, Hall $hall)
     {
-        dd($request);
-
-        $hall = $this->hall->fill([
+        $hall = new Hall([
+            'entertainment_venue_id' => $request->input('entertainment-venue-id'),
             'number' => $request->input('number'),
         ]);
-        $hall->entertainmentVenue()->associate($request->input('entertainment-venue-id'));
         $hall->save();
 
         $seatGroups = $request->input('groups', []);
         foreach ($seatGroups as $seatGroupData) {
             $seatGroupData = json_decode($seatGroupData, true);
-
-            $this->seatGroup = new SeatGroup();
-
-            $this->seatGroup->fill([
+            $seatGroup = new SeatGroup([
                 'id' => $seatGroupData['id'],
                 'name' => $seatGroupData['name'],
                 'number' => $seatGroupData['number'],
                 'hall_id' => $hall->id,
                 'color' => $seatGroupData['color'],
             ]);
-            $this->seatGroup->hall()->associate($hall->id);
-
-            $this->seatGroup->save();
-
+            $seatGroup->save();
         }
+
         $layout = json_decode($request->input('layout', '[]'), true);
 
         $layout = array_map(function ($element) {
@@ -146,44 +141,101 @@ class HallController extends Controller
      */
     public function update(Request $request, EntertainmentVenue $entertainmentVenue, Hall $hall)
     {
-        $hall->seatGroups()->delete();
-
-        $hall = $hall->fill([
+        $hall->update([
             'number' => $request->input('number'),
         ]);
-        $hall->save();
 
-        $seatGroups = $request->input('groups', []);
-        foreach ($seatGroups as $seatGroupData) {
+        $seatGroupsData = $request->input('groups', []);
+
+
+        $receivedSeatGroupIds = [];
+        foreach ($seatGroupsData as $seatGroupData) {
+            $decodedData = json_decode($seatGroupData, true);
+            if (isset($decodedData['id'])) {
+                $receivedSeatGroupIds[] = $decodedData['id'];
+            }
+        }
+        try {
+            $hall->seatGroups()->whereNotIn('id', $receivedSeatGroupIds)->delete();
+        } catch (Exception $e) {
+
+            return redirect()
+                ->route('admin.halls.index', compact('entertainmentVenue'))
+                ->with('error', 'One or more deleted groups had tickets associated with them.');
+        }
+
+        foreach ($seatGroupsData as $seatGroupData) {
             $seatGroupData = json_decode($seatGroupData, true);
 
-            $this->seatGroup->create([
-                'id' => $seatGroupData['id'],
-                'name' => $seatGroupData['name'],
-                'number' => $seatGroupData['number'],
-                'hall_id' => $hall->id,
-                'color' => $seatGroupData['color'],
-            ]);
+            $seatGroup = SeatGroup::updateOrCreate(
+                ['id' => $seatGroupData['id']],
+                [
+                    'name' => $seatGroupData['name'],
+                    'number' => $seatGroupData['number'],
+                    'hall_id' => $hall->id,
+                    'color' => $seatGroupData['color'],
+                ]
+            );
         }
+
+
+        //elements
         $layout = json_decode($request->input('layout', '[]'), true);
 
-        $layout = array_map(function ($element) {
-            $model = match ($element['type']) {
-                'seat' =>  new Seat([
-                    'number' => $element['number'],
-                    'seat_group_id' => $element['group']
-                ]),
-                'table' => new Table([
-                    'seat_group_id' => $element['group']
-                ]),
-                default => null,
-            };
-            if ($model) {
-                $model->save();
-                $element['id'] = $model->id;
+        $newElementIds = collect($layout)->pluck('id')->filter();
+
+        $seatGroups = $hall->seatGroups;
+
+        foreach ($seatGroups as $seatGroup) {
+            $existingSeatIds = $seatGroup->seats()->pluck('id')->toArray();
+            $existingTableIds = $seatGroup->tables()->pluck('id')->toArray();
+
+            $seatsToDelete = array_diff($existingSeatIds, $newElementIds->toArray());
+            $tablesToDelete = array_diff($existingTableIds, $newElementIds->toArray());
+
+            try {
+                Seat::destroy($seatsToDelete);
+                Table::destroy($tablesToDelete);
+            } catch (Exception $e) {
+
+                return redirect()
+                    ->route('admin.halls.index', compact('entertainmentVenue'))
+                    ->with('error', 'One or more deleted elements had tickets associated with them.');
             }
-            return $element;
-        }, $layout);
+        }
+
+        try {
+            $layout = array_map(function ($element) use ($hall, $entertainmentVenue) {
+                $model = match ($element['type']) {
+                    'seat' => Seat::updateOrCreate(
+                        ['id' => $element['id'] ?? null],
+                        [
+                            'number' => $element['number'],
+                            'seat_group_id' => $element['group']
+                        ]
+                    ),
+                    'table' => Table::updateOrCreate(
+                        ['id' => $element['id'] ?? null],
+                        [
+                            'seat_group_id' => $element['group']
+                        ]
+                    ),
+                    default => null,
+                };
+
+                if ($model) {
+                    $element['id'] = $model->id;
+                }
+
+                return $element;
+            }, $layout);
+        } catch (Exception $e) {
+
+            return redirect()
+                ->route('admin.halls.index', compact('entertainmentVenue'))
+                ->with('error', 'An error occurred, hall was not updated');
+        }
+
         $layout = array_map(function ($element) {
             unset($element['group']);
             unset($element['color']);
@@ -194,11 +246,9 @@ class HallController extends Controller
 
         $hall->update(['layout' => json_encode($layout)]);
 
-        $entertainmentVenue = $request->input('entertainment-venue-id');
         return redirect()
             ->route('admin.halls.index', compact('entertainmentVenue'))
-            ->with('success', 'Hall successfully created.');
-
+            ->with('success', 'Hall successfully updated.');
     }
 
     /**

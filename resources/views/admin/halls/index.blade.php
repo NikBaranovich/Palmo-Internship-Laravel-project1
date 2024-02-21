@@ -20,6 +20,11 @@
             {{ session('success') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
     <table class="table table-striped table-rounded">
         <thead>
             <tr>

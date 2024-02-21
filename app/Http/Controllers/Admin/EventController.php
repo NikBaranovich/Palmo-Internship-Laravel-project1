@@ -26,7 +26,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $sortableColumns = ['id', 'title', 'type', 'release_date'];
+        $sortableColumns = ['id', 'title', 'type', 'views_count', 'release_date'];
 
         $events = $this->event->query()
             ->when(

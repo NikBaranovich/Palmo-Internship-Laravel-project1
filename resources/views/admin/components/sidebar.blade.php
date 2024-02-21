@@ -37,4 +37,14 @@
             </a>
         </li>
     </ul>
+
+    <div class="sidebar-bottom">
+        <div class="current-user">
+            Logged in as: {{ Auth::user()->name }}
+        </div>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
 </aside>

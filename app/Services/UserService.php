@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserService extends BaseService
 {

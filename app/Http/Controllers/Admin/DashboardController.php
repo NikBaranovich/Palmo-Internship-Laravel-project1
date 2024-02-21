@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:' . UserRole::Admin->value);
+        $this->middleware('admin');
     }
 
     public function show()

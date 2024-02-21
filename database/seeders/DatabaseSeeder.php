@@ -24,11 +24,11 @@ class DatabaseSeeder extends Seeder
             // UserSeeder::class,
             // EventTypeSeeder::class,
             // GenreSeeder::class,
-            // EventSeeder::class,
+            EventSeeder::class,
             // CitySeeder::class,
             // VenueTypeSeeder::class,
             // EntertainmentVenueSeeder::class,
-            // RatingSeeder::class,
+            RatingSeeder::class,
             SessionSeeder::class,
             TicketSeeder::class,
         ]);

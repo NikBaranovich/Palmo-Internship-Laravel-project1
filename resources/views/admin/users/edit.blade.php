@@ -40,10 +40,13 @@
             <label for="user_role">User Role:</label>
             <select class="form-select" name="role" id="role">
                 @foreach (UserRole::cases() as $role)
-                <option value="{{ $role->value }}" {{ old('user_role', $user->role) == $role->value ? 'selected' : '' }}>
+                    @can('update', [App\Models\User::class, $user, $role->value])
+                        <option value="{{ $role->value }}"
+                            {{ old('user_role', $user->role) == $role->value ? 'selected' : '' }}>
 
-                        {{ ucfirst($role->value) }}
-                    </option>
+                            {{ ucfirst($role->value) }}
+                        </option>
+                    @endcan
                 @endforeach
             </select>
             @error('role')

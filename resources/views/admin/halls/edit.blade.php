@@ -175,7 +175,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         <h3>Hall Layout</h3>
                         <svg id="drag-drop-area" width="502px" height="502px" style="border: 2px dashed #ccc;"
                             xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -202,6 +202,7 @@
                                                     data-group-id = "{{ $element->group }}" x="{{ $element->x }}"
                                                     y="{{ $element->y }}" data-color = '{{ $element->color }}'
                                                     data-number = '{{ $element->number }}'
+                                                    @if (isset($element->id)) data-id="{{ $element->id }}" @endif
                                                     style="width: {{ $element->width }}px; height: {{ $element->height }}px;">
                                                     <div class="seat-number" style="background-color: {{ $element->color }}">
                                                         {{ $element->number }}</div>
@@ -214,6 +215,7 @@
                                                     cx="{{ $element->x + $element->width }}"
                                                     data-group-id = "{{ $element->group }}" data-color = '{{ $element->color }}'
                                                     cy="{{ $element->y + $element->height }}" data-x="{{ $element->x }}"
+                                                    @if (isset($element->id)) data-id="{{ $element->id }}" @endif
                                                     data-y="{{ $element->y }}" r="{{ $element->width }}"
                                                     style="fill: {{ $element->color }};"></circle>
                                             @break
@@ -238,7 +240,7 @@
                         </svg>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card">
                             <div class="card-body">
                                 <h6>Seat Groups</h6>
@@ -297,6 +299,9 @@
                                 <select name="groups[]" id="input-groups" multiple style="display: none;">
 
                                 </select>
+                                @error('groups')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -619,7 +624,7 @@
 
         var placesDataInput = document.getElementById('layout');
 
-        document.querySelector('form').addEventListener('submit', function() {
+        document.querySelector('#form').addEventListener('submit', function() {
             let placesData = getPlacesData();
             setGroupsData();
             placesDataInput.value = JSON.stringify(placesData);
@@ -646,6 +651,7 @@
                             type: 'table',
                             x: element.dataset.x,
                             y: element.dataset.y,
+                            id: element.dataset.id || null,
                             width: element.dataset.width,
                             height: element.dataset.height,
                             group: element.dataset.groupId,
@@ -656,6 +662,7 @@
                     case 'seat':
                         places.push({
                             type: 'seat',
+                            id: element.dataset.id || null,
                             number: element.dataset.seatNumber,
                             x: element.dataset.x,
                             y: element.dataset.y,

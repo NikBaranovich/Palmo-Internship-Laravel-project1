@@ -97,13 +97,19 @@
                                 <span class="material-icons-outlined">more_vert</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item text-warning"
-                                        href="{{ route('admin.users.edit', ['user' => $user->id]) }}">edit</a></li>
-                                <li>
-                                    <button onclick="handleDeleteClick({{ $user->id }})"
-                                        class="dropdown-item text-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal">delete</button>
-                                </li>
+                                @can('edit', [App\Models\User::class, $user])
+                                    <li><a class="dropdown-item text-warning"
+                                            href="{{ route('admin.users.edit', ['user' => $user->id]) }}">edit</a></li>
+                                @endcan
+                                @can('delete', [App\Models\User::class, $user])
+                                    <li>
+                                        <button onclick="handleDeleteClick({{ $user->id }})"
+                                            class="dropdown-item text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal">delete</button>
+                                    </li>
+                                @endcan
+
+
                             </ul>
                         </div>
 
