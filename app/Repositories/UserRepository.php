@@ -10,17 +10,6 @@ class UserRepository extends BaseRepository
         protected User $user
     ) {}
 
-    public function sort($sortBy = null, $sortOrder = 'asc')
-    {
-        $sortableColumns = ['id', 'name', 'email', 'role'];
-
-        return $this->query()
-            ->when($sortBy && in_array($sortBy, $sortableColumns), function (Builder $query) use ($sortBy, $sortOrder) {
-                $query->orderBy($sortBy, $sortOrder);
-            })
-            ->paginate(self::PER_PAGE);
-    }
-
     public function query()
     {
         return $this->user->query();

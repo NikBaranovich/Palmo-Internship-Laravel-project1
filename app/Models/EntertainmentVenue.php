@@ -10,6 +10,14 @@ class EntertainmentVenue extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'address',
+        'city_id',
+        'name',
+        'description',
+        'venue_type_id',
+    ];
+
     protected $guarded = ['created_at', 'updated_at'];
     /**
      * The attributes that should be hidden for serialization.
@@ -52,7 +60,7 @@ class EntertainmentVenue extends Model
             $query->where($query->qualifyColumn('city_id'), $city);
         });
     }
-    
+
     public function scopeByCities(Builder $query, $cities)
     {
         $query->when($cities, function (Builder $query) use ($cities) {

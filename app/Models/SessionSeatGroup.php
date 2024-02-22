@@ -14,7 +14,7 @@ class SessionSeatGroup extends Model
 
     protected $fillable = ['seat_group_id', 'session_id', 'price'];
 
-    public function sessions()
+    public function session()
     {
         return $this->belongsTo(Session::class);
     }

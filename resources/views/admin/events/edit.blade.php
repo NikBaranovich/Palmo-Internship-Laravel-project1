@@ -80,14 +80,17 @@
 
             <div class="form-group">
                 <label for="genres">Genres:</label>
-                <select style="height: 200px" class="form-select" multiple name="genres[]" id="genres">
+                <div class="bg-white">
                     @foreach ($genres as $genre)
-                        <option value="{{ $genre->id }}"
-                            {{ collect(old('genres', $event->genres->pluck('id')))->contains($genre->id) ? 'selected' : '' }}>
-                            {{ $genre->name }}
-                        </option>
+                        <div class="btn row">
+                            <label class='form-check-label'>
+                                <input value="{{ $genre->id }}" type="checkbox" class="form-check-input block"
+                                    name="genres[]" @if (collect(old('genres', $event->genres->pluck('id')))->contains($genre->id)) checked @endif>
+                                {{ $genre->name }}
+                            </label>
+                        </div>
                     @endforeach
-                </select>
+                </div>
                 @error('genres')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
@@ -104,5 +107,3 @@
         </form>
     </div>
 @endsection
-
-

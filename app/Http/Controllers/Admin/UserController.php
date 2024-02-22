@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\ShowUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,15 +23,16 @@ class UserController extends Controller
     public function __construct(
         protected UserService $service
     ) {
-        // $this->middleware('admin');
+        $this->middleware('admin');
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ShowUserRequest $request)
     {
         $this->authorize('viewAny', User::class);
+
         $users = $this->service->index($request);
 
         return view('admin.users.index', compact('users'));
@@ -72,8 +74,6 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $this->authorize('edit', [User::class, $user]);
-
-        $user->makeHidden(['email_verified_at', 'created_at', 'updated_at']);
 
         return view('admin.users.edit', compact('user'));
     }

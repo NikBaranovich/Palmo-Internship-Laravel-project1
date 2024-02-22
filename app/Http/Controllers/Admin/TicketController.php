@@ -34,55 +34,14 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        // $tickets = $this->ticket->query()
-        //     ->when($request->has('sort_by'), function (Builder $query) use ($request) {
-        //         $query->orderBy(
-        //             $request->input('sort_by'),
-        //             $request->input('sort_order', 'asc')
-        //         );
-        //     })
-        //     ->paginate(10);
         $tickets = $this->ticket->query()
-            ->with([
-                'seat.seatGroup.hall.entertainmentVenue',
-                'session.event',
-            ])
+            ->when($request->has('sort_by'), function (Builder $query) use ($request) {
+                $query->orderBy(
+                    $request->input('sort_by'),
+                    $request->input('sort_order', 'asc')
+                );
+            })
             ->paginate(10);
-        $ticketsData = [];
-        foreach ($tickets as $ticket) {
-            $seat = $ticket->seat;
-            $hall = $seat->seatGroup->hall;
-
-            $entertainmentVenue = $hall->entertainmentVenue;
-            $seatGroup = $seat->seatGroup;
-
-            $session = $ticket->session;
-            $event = $session->event;
-            $qrCode = QrCode::color(57, 73, 171)->errorCorrection('H')->size(70)->generate($ticket->token);
-
-            $ticketsData[] = compact(
-                'ticket',
-                'seat',
-                'qrCode',
-                'event',
-                'entertainmentVenue',
-                'hall',
-                'session',
-                'seatGroup'
-            );
-        }
-        $filePath = 'tickets/';
-        $fileName = 'ticket.pdf';
-        
-        Mail::to('archosgp1975@gmail.com')->send(new OrderProcessed($ticketsData));
-
-        $fullFileDir = Storage::path($filePath);
-        chmod($fullFileDir, 0777);
-
-        $fileUrl = $filePath . $fileName;
-        return view('pdf.ticketPdf', compact(
-            'ticketsData',
-        ));
     }
 
     /**
@@ -105,7 +64,6 @@ class TicketController extends Controller
 
         $data['token'] = (string) Str::uuid();
 
-        // dd($data);
 
         $this->ticket->create($data);
 

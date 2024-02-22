@@ -3,50 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ShowEntertainmentVenueRequest;
 use App\Http\Requests\UpdateVenueRequest;
 use App\Models\City;
 use App\Models\EntertainmentVenue;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\VenueType;
+use App\Services\EntertainmentVenueService;
 
 class EntertainmentVenueController extends Controller
 {
     public function __construct(
-        protected EntertainmentVenue $venue
+        protected EntertainmentVenueService $service
+
     ) {
-        $this->middleware('auth');
         $this->middleware('admin');
     }
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ShowEntertainmentVenueRequest $request)
     {
-        $sortableColumns = ['id', 'name', 'type', 'city', 'address'];
-
-        $venues = $this->venue->query()
-            ->when(
-                $request->has('sort_by') && in_array($request->input('sort_by'), $sortableColumns),
-                function (Builder $query) use ($request) {
-                    $sortBy = $request->input('sort_by');
-                    $sortOrder = $request->input('sort_order', 'asc');
-
-                    switch ($sortBy) {
-                        case 'city':
-                            $query->withAggregate('city', 'name')
-                                ->orderBy('city_name', $sortOrder);
-                            break;
-                        case 'type':
-                            $query->withAggregate('venueType', 'name')
-                                ->orderBy('venue_type_name', $sortOrder);
-                            break;
-                        default:
-                            $query->orderBy($sortBy, $sortOrder);
-                    }
-                }
-            )
-            ->paginate(10);
+        $venues = $this->service->index($request);
 
         return view('admin.entertainment-venues.index', compact('venues'));
     }
@@ -65,13 +44,13 @@ class EntertainmentVenueController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UpdateVenueRequest $request)
+    public function store(UpdateVenueRequest $request, EntertainmentVenue $entertainmentVenue)
     {
-        $this->venue->create($request->except('_token'));
+        $this->service->save($request, $entertainmentVenue);
 
         return redirect()
             ->route('admin.entertainment-venues.index')
-            ->with('success', 'Venue successfully created.');
+            ->with('success', 'Entertainment venue successfully created.');
     }
 
     /**
@@ -89,6 +68,7 @@ class EntertainmentVenueController extends Controller
     {
         $venueTypes = VenueType::all();
         $cities = City::all();
+
         return view('admin.entertainment-venues.edit', compact('entertainmentVenue', 'cities', 'venueTypes'));
     }
 
@@ -97,12 +77,11 @@ class EntertainmentVenueController extends Controller
      */
     public function update(UpdateVenueRequest $request, EntertainmentVenue $entertainmentVenue)
     {
-        $entertainmentVenue->fill($request->validated());
-        $entertainmentVenue->save();
+        $this->service->save($request, $entertainmentVenue);
 
         return redirect()
             ->route('admin.entertainment-venues.edit', $entertainmentVenue)
-            ->with('success', 'User successfully updated.');
+            ->with('success', 'Entertainment venue successfully updated.');
     }
 
     /**
@@ -110,18 +89,10 @@ class EntertainmentVenueController extends Controller
      */
     public function destroy(EntertainmentVenue $entertainmentVenue)
     {
-        $entertainmentVenue->delete();
+        $this->service->delete($entertainmentVenue);
 
         return redirect()
             ->route('admin.entertainment-venues.index')
-            ->with('success', 'Venue successfully deleted.');
-    }
-
-    public function search(Request $request)
-    {
-        return EntertainmentVenue::query()
-            ->where('name', 'LIKE', "%{$request->query('name')}%")
-            ->get(['id', 'name'])
-            ->toArray();
+            ->with('success', 'Entertainment venue successfully deleted.');
     }
 }

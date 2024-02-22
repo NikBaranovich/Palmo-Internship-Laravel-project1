@@ -48,5 +48,5 @@ Route::prefix('admin/')->name('admin.')->group(function () {
         });
     Route::resource('events', EventController::class)->names('events');
     Route::resource('sessions', SessionController::class)->names('sessions');
-    Route::resource('tickets', TicketController::class)->names('tickets');
+    // Route::resource('tickets', TicketController::class)->names('tickets');
 });

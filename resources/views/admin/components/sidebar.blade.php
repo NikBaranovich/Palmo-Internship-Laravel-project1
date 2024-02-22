@@ -31,11 +31,6 @@
                 <span class="material-icons-outlined">local_activity</span> Sessions
             </a>
         </li>
-        <li class="sidebar-list-item">
-            <a href="{{ route('admin.tickets.index') }}">
-                <span class="material-icons-outlined">book_online</span> Tickets
-            </a>
-        </li>
     </ul>
 
     <div class="sidebar-bottom">

@@ -8,6 +8,7 @@ use App\Models\Seat;
 use App\Models\SeatGroup;
 use App\Models\Table;
 use App\Repositories\HallRepository;
+use Exception;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
@@ -15,11 +16,9 @@ class HallService extends BaseService
 {
     public function __construct(
         protected HallRepository $repository,
+        protected SeatService $seatService,
+        protected SeatGroupService $seatGroupService,
         protected Hall $hall,
-        protected Seat $seat,
-        protected Table $table,
-        protected SeatGroup $seatGroup,
-        protected EntertainmentVenue $entertainmentVenue,
     ) {
     }
 
@@ -28,52 +27,50 @@ class HallService extends BaseService
         return $this->repository->index($request, $request->entertainmentVenue);
     }
 
-    public function save($request, Hall $hall)
+    public function save($request, EntertainmentVenue $entertainmentVenue, Hall $hall)
     {
-        //todo refactor simplify
-
-        $hall = $this->hall->fill([
-            'entertainment_venue_id' => $request->input('entertainment-venue-id'),
+        $hall->fill([
             'number' => $request->input('number'),
         ]);
+        $hall->entertainmentVenue()->associate($entertainmentVenue->id);
         $hall->save();
 
-        $seatGroups = $request->input('groups', []);
-        foreach ($seatGroups as $seatGroupData) {
-            $seatGroupData = json_decode($seatGroupData, true);
-            $seatGroup = $this->seatGroup->fill([
-                'id' => $seatGroupData['id'],
-                'name' => $seatGroupData['name'],
-                'number' => $seatGroupData['number'],
-                'hall_id' => $hall->id,
-                'color' => $seatGroupData['color'],
-            ]);
-            $seatGroup->save();
+        $this->seatGroupService->save($request, $hall->id);
+
+        $layout = $this->seatService->save($request);
+
+        $hall->update(['layout' => json_encode($layout)]);
+    }
+
+    public function update($request, EntertainmentVenue $entertainmentVenue, Hall $hall)
+    {
+        $hall->update([
+            'number' => $request->input('number'),
+        ]);
+
+        $response = $this->seatGroupService->update($request, $entertainmentVenue, $hall);
+
+        if (is_array($response) && $response['message'] === 'error') {
+            return [
+                'status' => 'error',
+                'message' => 'One or more deleted groups had sessions associated with them.'
+            ];
         }
-        $layout = json_decode($request->input('layout', '[]'), true);
 
-        $layout = array_map(function ($element) {
-            $model = match ($element['type']) {
-                'seat' =>  $this->seat->fill([
-                    'number' => 0,
-                    'seat_group_id' => $element['group']
-                ]),
-                'table' => $this->table->fill([
-                    'seat_group_id' => $element['group']
-                ]),
-            };
-            $model->save();
-            $element['id'] = $model->id;
+        $layout = $this->seatService->update($request, $entertainmentVenue, $hall);
 
-            return $element;
-        }, $layout);
-        $layout = array_map(function ($element) {
-            unset($element['group']);
+        if (!$layout) {
+            return [
+                'status' => 'error',
+                'message' => 'One or more deleted seats had tickets associated with them.'
+            ];
+        }
+        $hall->update(['layout' => json_encode($layout)]);
 
-            return $element;
-        }, $layout);
-
-        return $hall->update(['layout' => json_encode($layout)]);
+        return [
+            'status' => 'success',
+            'message' => 'Hall successfully updated.'
+        ];
     }
 
     public function delete(Hall $hall)
