@@ -44,7 +44,7 @@ Route::prefix('admin/')->name('admin.')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::put('/{hall}', 'update')->name('update');
             Route::get('/{hall}/edit', 'edit')->name('edit');
-            Route::post('/{hall}', 'destroy')->name('destroy');
+            Route::delete('/{hall}', 'destroy')->name('destroy');
         });
     Route::resource('events', EventController::class)->names('events');
     Route::resource('sessions', SessionController::class)->names('sessions');

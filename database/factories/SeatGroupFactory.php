@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Hall;
 use App\Models\SeatGroup;
 use App\Models\Session;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,9 +20,10 @@ class SeatGroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'session_id' => Session::get()->random()->id,
-            'seat_group_id' => SeatGroup::get()->random()->id,
-            'price' => $this->faker->randomDigit,
+            'name' => $this->faker->word(),
+            'color' => $this->faker->rgbColor(),
+            'number' => $this->faker->numberBetween(1, 5),
+            'hall_id' => Hall::get()->random()->id,
         ];
     }
 }

@@ -11,6 +11,7 @@ use App\Repositories\HallRepository;
 use Exception;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HallService extends BaseService
 {
@@ -75,6 +76,21 @@ class HallService extends BaseService
 
     public function delete(Hall $hall)
     {
-        return $hall->delete();
+        DB::beginTransaction();
+        try {
+            $hall->seatGroups()->delete();
+            $hall->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'status' => 'error',
+                'message' => 'One or more deleted seats had tickets associated with them.'
+            ];
+        }
+        return [
+            'status' => 'success',
+            'message' => 'Hall successfully deleted.'
+        ];
     }
 }

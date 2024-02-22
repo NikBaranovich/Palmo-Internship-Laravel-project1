@@ -103,8 +103,12 @@ class HallController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(EntertainmentVenue $entertainmentVenue, Hall $hall)
     {
-        //
+        $response =$this->service->delete($hall);
+
+        return redirect()
+            ->route('admin.halls.index', compact('entertainmentVenue'))
+            ->with($response['status'], $response['message']);
     }
 }

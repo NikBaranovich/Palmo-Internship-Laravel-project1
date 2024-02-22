@@ -13,6 +13,6 @@ class EntertainmentVenueSeeder extends Seeder
      */
     public function run(): void
     {
-        EntertainmentVenue::factory(50)->create();
+        EntertainmentVenue::factory(15)->create();
     }
 }
